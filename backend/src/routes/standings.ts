@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import db from '../db';
+import { query } from '../db';
 import { calculateBetPoints, calculateTeamPickPoints, Phase, getTrend } from '../scoring';
 
 const router = Router();
@@ -31,13 +31,14 @@ interface GameRow {
   status: string;
 }
 
-function computeTeamPickBonus(teamPick: string | null): number {
+async function computeTeamPickBonus(teamPick: string | null): Promise<number> {
   if (!teamPick) return 0;
 
   // Check if team won the final
-  const finalGame = db.prepare(
+  const finalGames = await query<GameRow>(
     "SELECT * FROM games WHERE phase = 'final' AND status = 'finished'"
-  ).get() as GameRow | undefined;
+  );
+  const finalGame = finalGames[0];
 
   if (finalGame && finalGame.home_score != null && finalGame.away_score != null) {
     const finalTrend = getTrend(finalGame.home_score, finalGame.away_score);
@@ -49,9 +50,9 @@ function computeTeamPickBonus(teamPick: string | null): number {
   }
 
   // Check if team lost in semi-finals
-  const sfGames = db.prepare(
+  const sfGames = await query<GameRow>(
     "SELECT * FROM games WHERE phase = 'sf' AND status = 'finished'"
-  ).all() as GameRow[];
+  );
 
   for (const sf of sfGames) {
     if (sf.home_score != null && sf.away_score != null) {
@@ -62,9 +63,10 @@ function computeTeamPickBonus(teamPick: string | null): number {
   }
 
   // Check if team is still in the tournament (in final or sf but not finished)
-  const sfActive = db.prepare(
-    "SELECT * FROM games WHERE phase IN ('sf', 'final') AND (home_team = ? OR away_team = ?)"
-  ).all(teamPick, teamPick) as GameRow[];
+  const sfActive = await query<GameRow>(
+    "SELECT * FROM games WHERE phase IN ('sf', 'final') AND (home_team = $1 OR away_team = $2)",
+    [teamPick, teamPick]
+  );
 
   if (sfActive.length > 0) {
     // Team reached semi or final - partial points not awarded yet
@@ -75,70 +77,76 @@ function computeTeamPickBonus(teamPick: string | null): number {
 }
 
 // GET /api/standings - participant leaderboard
-router.get('/', (req: Request, res: Response): void => {
-  const users = db.prepare('SELECT id, username, team_pick FROM users').all() as UserRow[];
+router.get('/', async (req: Request, res: Response): Promise<void> => {
+  try {
+    const users = await query<UserRow>('SELECT id, username, team_pick FROM users');
 
-  const bets = db.prepare(`
-    SELECT b.user_id, b.game_id, b.home_score, b.away_score,
-           g.phase, g.home_score as actual_home, g.away_score as actual_away, g.status
-    FROM bets b
-    JOIN games g ON b.game_id = g.id
-    WHERE g.status = 'finished'
-  `).all() as BetRow[];
+    const bets = await query<BetRow>(`
+      SELECT b.user_id, b.game_id, b.home_score, b.away_score,
+             g.phase, g.home_score as actual_home, g.away_score as actual_away, g.status
+      FROM bets b
+      JOIN games g ON b.game_id = g.id
+      WHERE g.status = 'finished'
+    `);
 
-  // Group bets by user
-  const betsByUser: Record<number, BetRow[]> = {};
-  for (const bet of bets) {
-    if (!betsByUser[bet.user_id]) betsByUser[bet.user_id] = [];
-    betsByUser[bet.user_id].push(bet);
-  }
-
-  const standings = users.map((user) => {
-    const userBets = betsByUser[user.id] || [];
-    let betPoints = 0;
-    let gamesBet = 0;
-    let gamesWithPoints = 0;
-
-    for (const bet of userBets) {
-      if (bet.actual_home != null && bet.actual_away != null) {
-        const pts = calculateBetPoints(
-          bet.phase,
-          bet.home_score,
-          bet.away_score,
-          bet.actual_home,
-          bet.actual_away
-        );
-        betPoints += pts;
-        gamesBet++;
-        if (pts > 0) gamesWithPoints++;
-      }
+    // Group bets by user
+    const betsByUser: Record<number, BetRow[]> = {};
+    for (const bet of bets) {
+      if (!betsByUser[bet.user_id]) betsByUser[bet.user_id] = [];
+      betsByUser[bet.user_id].push(bet);
     }
 
-    const teamPickBonus = computeTeamPickBonus(user.team_pick);
-    const totalPoints = betPoints + teamPickBonus;
+    const standingsPromises = users.map(async (user) => {
+      const userBets = betsByUser[user.id] || [];
+      let betPoints = 0;
+      let gamesBet = 0;
+      let gamesWithPoints = 0;
 
-    return {
-      userId: user.id,
-      username: user.username,
-      teamPick: user.team_pick,
-      totalPoints,
-      betPoints,
-      teamPickBonus,
-      gamesBet,
-      gamesWithPoints,
-    };
-  });
+      for (const bet of userBets) {
+        if (bet.actual_home != null && bet.actual_away != null) {
+          const pts = calculateBetPoints(
+            bet.phase,
+            bet.home_score,
+            bet.away_score,
+            bet.actual_home,
+            bet.actual_away
+          );
+          betPoints += pts;
+          gamesBet++;
+          if (pts > 0) gamesWithPoints++;
+        }
+      }
 
-  standings.sort((a, b) => b.totalPoints - a.totalPoints);
+      const teamPickBonus = await computeTeamPickBonus(user.team_pick);
+      const totalPoints = betPoints + teamPickBonus;
 
-  // Add rank
-  const ranked = standings.map((s, i) => ({ ...s, rank: i + 1 }));
+      return {
+        userId: user.id,
+        username: user.username,
+        teamPick: user.team_pick,
+        totalPoints,
+        betPoints,
+        teamPickBonus,
+        gamesBet,
+        gamesWithPoints,
+      };
+    });
 
-  res.json(ranked);
+    const standings = await Promise.all(standingsPromises);
+    standings.sort((a, b) => b.totalPoints - a.totalPoints);
+
+    // Add rank
+    const ranked = standings.map((s, i) => ({ ...s, rank: i + 1 }));
+
+    res.json(ranked);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
 });
 
-// GET /api/results - games with results and bets for current user
-router.get('/results', (req: Request, res: Response): void => {
+// GET /api/standings/results - games with results and bets for current user
+router.get('/results', (_req: Request, res: Response): void => {
   // This is handled separately - just re-export or handle inline
   res.json([]);
 });

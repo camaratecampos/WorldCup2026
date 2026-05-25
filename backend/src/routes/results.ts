@@ -1,5 +1,5 @@
 import { Router, Response } from 'express';
-import db from '../db';
+import { query } from '../db';
 import { authMiddleware, AuthRequest } from '../auth';
 import { calculateBetPoints, Phase } from '../scoring';
 
@@ -22,34 +22,40 @@ interface GameWithBet {
 }
 
 // GET /api/results - games with results and bets for current user
-router.get('/', authMiddleware, (req: AuthRequest, res: Response): void => {
-  const games = db.prepare(`
-    SELECT g.*,
-           b.home_score as bet_home,
-           b.away_score as bet_away
-    FROM games g
-    LEFT JOIN bets b ON b.game_id = g.id AND b.user_id = ?
-    WHERE g.status = 'finished'
-    ORDER BY g.match_date DESC
-  `).all(req.user!.userId) as (Omit<GameWithBet, 'points'> & { bet_home: number | null; bet_away: number | null })[];
+router.get('/', authMiddleware, async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const games = await query<Omit<GameWithBet, 'points'> & { bet_home: number | null; bet_away: number | null }>(
+      `SELECT g.*,
+              b.home_score as bet_home,
+              b.away_score as bet_away
+       FROM games g
+       LEFT JOIN bets b ON b.game_id = g.id AND b.user_id = $1
+       WHERE g.status = 'finished'
+       ORDER BY g.match_date DESC`,
+      [req.user!.userId]
+    );
 
-  const result: GameWithBet[] = games.map((g) => {
-    let points: number | null = null;
+    const result: GameWithBet[] = games.map((g) => {
+      let points: number | null = null;
 
-    if (g.bet_home != null && g.bet_away != null && g.home_score != null && g.away_score != null) {
-      points = calculateBetPoints(
-        g.phase,
-        g.bet_home,
-        g.bet_away,
-        g.home_score,
-        g.away_score
-      );
-    }
+      if (g.bet_home != null && g.bet_away != null && g.home_score != null && g.away_score != null) {
+        points = calculateBetPoints(
+          g.phase,
+          g.bet_home,
+          g.bet_away,
+          g.home_score,
+          g.away_score
+        );
+      }
 
-    return { ...g, points };
-  });
+      return { ...g, points };
+    });
 
-  res.json(result);
+    res.json(result);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
 });
 
 export default router;

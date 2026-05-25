@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "World Cup 2026 betting app for Hikma group",
   "scripts": {
+    "dev": "concurrently \"cd backend && npx ts-node src/index.ts\" \"cd frontend && npm run dev\"",
+    "build": "cd frontend && npm run build",
+    "vercel-build": "cd frontend && npm install && npm run build",
     "dev:backend": "cd backend && npm run dev",
     "dev:frontend": "cd frontend && npm run dev",
     "build:frontend": "cd frontend && npm run build",

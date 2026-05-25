@@ -1,4 +1,4 @@
-import { Pool, QueryResult } from 'pg';
+import { Pool } from 'pg';
 import bcrypt from 'bcryptjs';
 
 const pool = new Pool({
@@ -12,8 +12,8 @@ export async function query<T = Record<string, unknown>>(
   sql: string,
   params?: unknown[]
 ): Promise<T[]> {
-  const result: QueryResult<T> = await pool.query(sql, params);
-  return result.rows;
+  const result = await pool.query(sql, params);
+  return result.rows as T[];
 }
 
 export async function queryOne<T = Record<string, unknown>>(

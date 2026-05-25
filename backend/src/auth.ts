@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import { Request, Response, NextFunction } from 'express';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'hikma2026supersecret';
+const JWT_SECRET = process.env.JWT_SECRET || 'fallback-dev-secret';
 
 export interface AuthPayload {
   userId: number;
