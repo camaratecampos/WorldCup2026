@@ -66,6 +66,21 @@ const TEAM_MAP: Record<string, string> = {
   'Panama': 'Panama',
 };
 
+const TEAM_GROUP: Record<string, string> = {
+  'Mexico': 'A', 'South Africa': 'A', 'Korea Republic': 'A', 'Czechia': 'A',
+  'Canada': 'B', 'Bosnia and Herzegovina': 'B', 'Qatar': 'B', 'Switzerland': 'B',
+  'Brazil': 'C', 'Morocco': 'C', 'Haiti': 'C', 'Scotland': 'C',
+  'USA': 'D', 'Paraguay': 'D', 'Australia': 'D', 'Türkiye': 'D',
+  'Germany': 'E', 'Curaçao': 'E', "Côte d'Ivoire": 'E', 'Ecuador': 'E',
+  'Netherlands': 'F', 'Japan': 'F', 'Sweden': 'F', 'Tunisia': 'F',
+  'Belgium': 'G', 'Egypt': 'G', 'IR Iran': 'G', 'New Zealand': 'G',
+  'Spain': 'H', 'Cabo Verde': 'H', 'Saudi Arabia': 'H', 'Uruguay': 'H',
+  'France': 'I', 'Senegal': 'I', 'Iraq': 'I', 'Norway': 'I',
+  'Argentina': 'J', 'Algeria': 'J', 'Austria': 'J', 'Jordan': 'J',
+  'Portugal': 'K', 'Congo DR': 'K', 'Uzbekistan': 'K', 'Colombia': 'K',
+  'England': 'L', 'Croatia': 'L', 'Ghana': 'L', 'Panama': 'L',
+};
+
 function normalizeTeam(name: string): string {
   return TEAM_MAP[name] || name;
 }
@@ -188,6 +203,10 @@ export async function syncFromESPN(): Promise<{ synced: number; errors: string[]
     let groupName: string | null = null;
     const groupMatch = notes.match(/Group\s+([A-L])/i);
     if (groupMatch) groupName = groupMatch[1].toUpperCase();
+    // Fallback: look up group from team name if ESPN notes don't include it
+    if (phase === 'group' && !groupName) {
+      groupName = TEAM_GROUP[homeTeam] || TEAM_GROUP[awayTeam] || null;
+    }
 
     const statusType = ((comp.status as Record<string, unknown>)?.type as Record<string, unknown>) || {};
     const isFinished = (statusType.name as string) === 'STATUS_FINAL' || (statusType.completed as boolean) === true;
@@ -230,6 +249,11 @@ export async function syncFromESPN(): Promise<{ synced: number; errors: string[]
     } catch (e) {
       errors.push(`${homeTeam} vs ${awayTeam}: ${(e as Error).message}`);
     }
+  }
+
+  // Remove old hardcoded games (those without an ESPN ID)
+  if (synced > 0) {
+    await execute('DELETE FROM games WHERE espn_id IS NULL');
   }
 
   return { synced, errors };
