@@ -6,14 +6,19 @@ import { Flag } from '../ui/Flag';
 import { showToast } from '../ui/Toast';
 import { useAuth } from '../../context/AuthContext';
 
+const PT_TZ = 'Europe/Lisbon';
+
 function formatTime(dateStr: string): string {
-  const d = new Date(dateStr);
-  return d.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' });
+  return new Date(dateStr).toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit', timeZone: PT_TZ });
 }
 
 function formatDateLabel(dateStr: string): string {
-  const d = new Date(dateStr);
-  return d.toLocaleDateString('pt-PT', { weekday: 'short', day: '2-digit', month: '2-digit' });
+  return new Date(dateStr).toLocaleDateString('pt-PT', { weekday: 'short', day: '2-digit', month: '2-digit', timeZone: PT_TZ });
+}
+
+// Returns YYYY-MM-DD in Portugal timezone
+function getPortugalDate(dateStr: string): string {
+  return new Intl.DateTimeFormat('sv-SE', { timeZone: PT_TZ }).format(new Date(dateStr));
 }
 
 interface GameCardProps {
@@ -232,6 +237,7 @@ export function Bets() {
   const [loading, setLoading] = useState(true);
   const [dates, setDates] = useState<string[]>([]);
   const [adminMode, setAdminMode] = useState(false);
+  const [syncing, setSyncing] = useState(false);
 
   const loadGames = useCallback(async () => {
     setLoading(true);
@@ -239,19 +245,19 @@ export function Bets() {
       const [allGames, myBets] = await Promise.all([api.getGames(), api.getMyBets()]);
       setBets(myBets);
 
-      // Get unique dates
+      // Group by Portugal timezone date
       const uniqueDates = Array.from(
-        new Set(allGames.map((g) => g.match_date.split('T')[0]))
+        new Set(allGames.map((g) => getPortugalDate(g.match_date)))
       ).sort();
       setDates(uniqueDates);
 
-      // Select today or first upcoming date
-      const today = new Date().toISOString().split('T')[0];
+      // Select today or first upcoming date (in Portugal timezone)
+      const today = getPortugalDate(new Date().toISOString());
       const upcoming = uniqueDates.find((d) => d >= today) || uniqueDates[0] || today;
       if (!selectedDate) setSelectedDate(upcoming);
 
       setGames(allGames);
-    } catch (err) {
+    } catch {
       showToast('Erro ao carregar jogos', 'error');
     } finally {
       setLoading(false);
@@ -262,7 +268,20 @@ export function Bets() {
     loadGames();
   }, []);
 
-  const gamesForDate = games.filter((g) => g.match_date.startsWith(selectedDate));
+  async function handleSync() {
+    setSyncing(true);
+    try {
+      const result = await api.syncESPN();
+      showToast(`Sync OK: ${result.synced} jogos`, 'success');
+      await loadGames();
+    } catch (err: unknown) {
+      showToast(err instanceof Error ? err.message : 'Erro no sync', 'error');
+    } finally {
+      setSyncing(false);
+    }
+  }
+
+  const gamesForDate = games.filter((g) => getPortugalDate(g.match_date) === selectedDate);
   const betMap = new Map(bets.map((b) => [b.game_id, b]));
 
   if (loading) {
@@ -275,15 +294,24 @@ export function Bets() {
 
   return (
     <div className="space-y-4 pb-4">
-      {/* Admin toggle */}
+      {/* Admin controls */}
       {user?.isAdmin && (
-        <div className="flex items-center justify-between bg-orange-900/30 rounded-2xl p-3 border border-orange-500/30">
-          <span className="text-orange-300 text-sm font-semibold">Modo Admin</span>
+        <div className="bg-orange-900/30 rounded-2xl p-3 border border-orange-500/30 space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="text-orange-300 text-sm font-semibold">Modo Admin</span>
+            <button
+              onClick={() => setAdminMode(!adminMode)}
+              className={`px-4 py-1.5 rounded-xl text-sm font-bold ${adminMode ? 'bg-orange-500 text-white' : 'bg-white/10 text-white/70'}`}
+            >
+              {adminMode ? 'Activo' : 'Inactivo'}
+            </button>
+          </div>
           <button
-            onClick={() => setAdminMode(!adminMode)}
-            className={`px-4 py-1.5 rounded-xl text-sm font-bold ${adminMode ? 'bg-orange-500 text-white' : 'bg-white/10 text-white/70'}`}
+            onClick={handleSync}
+            disabled={syncing}
+            className="w-full bg-orange-500/20 text-orange-300 border border-orange-500/30 text-xs font-semibold py-2 rounded-xl disabled:opacity-50"
           >
-            {adminMode ? 'Activo' : 'Inactivo'}
+            {syncing ? 'A sincronizar ESPN...' : '🔄 Sincronizar jogos / resultados (ESPN)'}
           </button>
         </div>
       )}

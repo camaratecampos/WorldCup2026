@@ -7,9 +7,60 @@ import { Flag } from '../ui/Flag';
 import { LoadingSpinner } from '../ui/LoadingSpinner';
 import { showToast } from '../ui/Toast';
 
+// Opening game: Mexico vs South Africa, June 11 2026 at 20:00 Portugal time (19:00 UTC)
+const TOURNAMENT_START = new Date('2026-06-11T19:00:00Z');
+
 function formatDate(dateStr: string): string {
-  const d = new Date(dateStr);
-  return d.toLocaleDateString('pt-PT', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+  return new Date(dateStr).toLocaleDateString('pt-PT', {
+    day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit',
+    timeZone: 'Europe/Lisbon',
+  });
+}
+
+function Countdown() {
+  const [timeLeft, setTimeLeft] = useState<{ days: number; hours: number; minutes: number; seconds: number } | null>(null);
+
+  useEffect(() => {
+    function tick() {
+      const diff = TOURNAMENT_START.getTime() - Date.now();
+      if (diff <= 0) { setTimeLeft(null); return; }
+      setTimeLeft({
+        days: Math.floor(diff / 86400000),
+        hours: Math.floor((diff % 86400000) / 3600000),
+        minutes: Math.floor((diff % 3600000) / 60000),
+        seconds: Math.floor((diff % 60000) / 1000),
+      });
+    }
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, []);
+
+  if (!timeLeft) return null;
+
+  const Cell = ({ value, label }: { value: number; label: string }) => (
+    <div className="flex flex-col items-center">
+      <div className="bg-primary-dark rounded-xl w-14 h-14 flex items-center justify-center text-2xl font-bold text-gold tabular-nums">
+        {String(value).padStart(2, '0')}
+      </div>
+      <span className="text-white/50 text-xs mt-1">{label}</span>
+    </div>
+  );
+
+  return (
+    <div className="bg-white/10 rounded-2xl p-4 border border-white/10">
+      <h3 className="font-bold text-white mb-3 flex items-center gap-2 text-sm">
+        <span>⏳</span> Conta Decrescente
+      </h3>
+      <div className="flex justify-around">
+        <Cell value={timeLeft.days} label="dias" />
+        <Cell value={timeLeft.hours} label="horas" />
+        <Cell value={timeLeft.minutes} label="min" />
+        <Cell value={timeLeft.seconds} label="seg" />
+      </div>
+      <p className="text-center text-white/40 text-xs mt-3">até ao início • 11 jun 20:00h</p>
+    </div>
+  );
 }
 
 export function Home() {
@@ -23,8 +74,7 @@ export function Home() {
   const [savingTeamPick, setSavingTeamPick] = useState(false);
 
   const now = new Date();
-  const tournamentStart = new Date('2026-06-11T00:00:00');
-  const canPickTeam = now < tournamentStart;
+  const canPickTeam = now < TOURNAMENT_START;
 
   useEffect(() => {
     loadData();
@@ -107,6 +157,9 @@ export function Home() {
           </div>
         )}
       </div>
+
+      {/* Countdown */}
+      <Countdown />
 
       {/* Team pick */}
       <div className="bg-white/10 rounded-2xl p-4 border border-white/10">

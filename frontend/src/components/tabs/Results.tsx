@@ -7,8 +7,7 @@ import { LoadingSpinner } from '../ui/LoadingSpinner';
 type SubTab = 'games' | 'groups' | 'third';
 
 function formatDate(dateStr: string): string {
-  const d = new Date(dateStr);
-  return d.toLocaleDateString('pt-PT', { day: '2-digit', month: '2-digit' });
+  return new Date(dateStr).toLocaleDateString('pt-PT', { day: '2-digit', month: '2-digit', timeZone: 'Europe/Lisbon' });
 }
 
 function getTrend(home: number, away: number): 'H' | 'D' | 'A' {

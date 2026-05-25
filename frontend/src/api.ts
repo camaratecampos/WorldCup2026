@@ -83,6 +83,9 @@ export const api = {
       method: 'POST',
       body: JSON.stringify({ gameId, homeScore, awayScore }),
     }),
+
+  syncESPN: () =>
+    request<{ success: boolean; synced: number; errors: string[] }>('/admin/sync', { method: 'POST' }),
 };
 
 export default api;

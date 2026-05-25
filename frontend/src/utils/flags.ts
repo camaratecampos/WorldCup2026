@@ -1,28 +1,28 @@
 const teamCodes: Record<string, string> = {
   // Group A
-  Mexico: 'mx', USA: 'us', Canada: 'ca', Panama: 'pa',
+  Mexico: 'mx', 'South Africa': 'za', 'Korea Republic': 'kr', Czechia: 'cz',
   // Group B
-  Germany: 'de', Japan: 'jp', Chile: 'cl', 'South Africa': 'za',
+  Canada: 'ca', 'Bosnia and Herzegovina': 'ba', Qatar: 'qa', Switzerland: 'ch',
   // Group C
-  Spain: 'es', Brazil: 'br', 'Ivory Coast': 'ci', Serbia: 'rs',
+  Brazil: 'br', Morocco: 'ma', Haiti: 'ht', Scotland: 'gb-sct',
   // Group D
-  France: 'fr', Argentina: 'ar', 'New Zealand': 'nz', Morocco: 'ma',
+  USA: 'us', Paraguay: 'py', Australia: 'au', 'Türkiye': 'tr',
   // Group E
-  England: 'gb-eng', Colombia: 'co', Ukraine: 'ua', Senegal: 'sn',
+  Germany: 'de', 'Curaçao': 'cw', "Côte d'Ivoire": 'ci', Ecuador: 'ec',
   // Group F
-  Portugal: 'pt', Netherlands: 'nl', Ecuador: 'ec', 'Saudi Arabia': 'sa',
+  Netherlands: 'nl', Japan: 'jp', Sweden: 'se', Tunisia: 'tn',
   // Group G
-  Belgium: 'be', Uruguay: 'uy', Algeria: 'dz', Nigeria: 'ng',
+  Belgium: 'be', Egypt: 'eg', 'IR Iran': 'ir', 'New Zealand': 'nz',
   // Group H
-  Italy: 'it', Australia: 'au', 'South Korea': 'kr', Iran: 'ir',
+  Spain: 'es', 'Cabo Verde': 'cv', 'Saudi Arabia': 'sa', Uruguay: 'uy',
   // Group I
-  Croatia: 'hr', Egypt: 'eg', Switzerland: 'ch', Thailand: 'th',
+  France: 'fr', Senegal: 'sn', Iraq: 'iq', Norway: 'no',
   // Group J
-  Turkey: 'tr', Denmark: 'dk', Cameroon: 'cm', Honduras: 'hn',
+  Argentina: 'ar', Algeria: 'dz', Austria: 'at', Jordan: 'jo',
   // Group K
-  Austria: 'at', Paraguay: 'py', Ghana: 'gh', 'El Salvador': 'sv',
+  Portugal: 'pt', 'Congo DR': 'cd', Uzbekistan: 'uz', Colombia: 'co',
   // Group L
-  Poland: 'pl', Peru: 'pe', 'Congo DR': 'cd', Tunisia: 'tn',
+  England: 'gb-eng', Croatia: 'hr', Ghana: 'gh', Panama: 'pa',
 };
 
 export function getFlagUrl(team: string): string {
@@ -31,7 +31,6 @@ export function getFlagUrl(team: string): string {
   return `https://flagcdn.com/w40/${code}.png`;
 }
 
-// kept for backwards compat but prefer getFlagUrl
 export function getFlag(team: string): string {
   return getFlagUrl(team);
 }
@@ -39,16 +38,16 @@ export function getFlag(team: string): string {
 export const allTeams = Object.keys(teamCodes);
 
 export const teamsByGroup: Record<string, string[]> = {
-  A: ['Mexico', 'USA', 'Canada', 'Panama'],
-  B: ['Germany', 'Japan', 'Chile', 'South Africa'],
-  C: ['Spain', 'Brazil', 'Ivory Coast', 'Serbia'],
-  D: ['France', 'Argentina', 'New Zealand', 'Morocco'],
-  E: ['England', 'Colombia', 'Ukraine', 'Senegal'],
-  F: ['Portugal', 'Netherlands', 'Ecuador', 'Saudi Arabia'],
-  G: ['Belgium', 'Uruguay', 'Algeria', 'Nigeria'],
-  H: ['Italy', 'Australia', 'South Korea', 'Iran'],
-  I: ['Croatia', 'Egypt', 'Switzerland', 'Thailand'],
-  J: ['Turkey', 'Denmark', 'Cameroon', 'Honduras'],
-  K: ['Austria', 'Paraguay', 'Ghana', 'El Salvador'],
-  L: ['Poland', 'Peru', 'Congo DR', 'Tunisia'],
+  A: ['Mexico', 'South Africa', 'Korea Republic', 'Czechia'],
+  B: ['Canada', 'Bosnia and Herzegovina', 'Qatar', 'Switzerland'],
+  C: ['Brazil', 'Morocco', 'Haiti', 'Scotland'],
+  D: ['USA', 'Paraguay', 'Australia', 'Türkiye'],
+  E: ['Germany', 'Curaçao', "Côte d'Ivoire", 'Ecuador'],
+  F: ['Netherlands', 'Japan', 'Sweden', 'Tunisia'],
+  G: ['Belgium', 'Egypt', 'IR Iran', 'New Zealand'],
+  H: ['Spain', 'Cabo Verde', 'Saudi Arabia', 'Uruguay'],
+  I: ['France', 'Senegal', 'Iraq', 'Norway'],
+  J: ['Argentina', 'Algeria', 'Austria', 'Jordan'],
+  K: ['Portugal', 'Congo DR', 'Uzbekistan', 'Colombia'],
+  L: ['England', 'Croatia', 'Ghana', 'Panama'],
 };
