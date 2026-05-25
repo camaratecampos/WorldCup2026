@@ -79,20 +79,18 @@ app.post('/api/team-pick', authMiddleware, async (req: AuthRequest, res: Respons
   }
 });
 
-// Initialize DB then start server
+export default app;
+
+const PORT = process.env.PORT || 3001;
+
 initDb()
   .then(() => {
     console.log('Database initialized');
+    app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+    });
   })
   .catch((err) => {
     console.error('Failed to initialize database:', err);
+    process.exit(1);
   });
-
-export default app;
-
-if (process.env.VERCEL !== '1') {
-  const PORT = process.env.PORT || 3001;
-  app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-  });
-}
