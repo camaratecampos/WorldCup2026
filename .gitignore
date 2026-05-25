@@ -3,7 +3,7 @@ backend/node_modules/
 frontend/node_modules/
 backend/dist/
 frontend/dist/
-data/*.db
+data/
 *.db
 .env
 .env.local
