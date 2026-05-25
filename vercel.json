@@ -1,13 +1,3 @@
 {
-  "experimentalServices": {
-    "frontend": {
-      "root": "frontend",
-      "routePrefix": "/",
-      "framework": "vite"
-    },
-    "backend": {
-      "root": "backend",
-      "routePrefix": "/api"
-    }
-  }
+  "installCommand": "echo 'Set Root Directory to frontend/ in Vercel project settings'"
 }
