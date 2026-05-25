@@ -16,7 +16,7 @@ const tabs: { id: Tab; label: string; icon: string }[] = [
   { id: 'rules', label: 'Regras', icon: '📋' },
   { id: 'bets', label: 'Apostas', icon: '⚽' },
   { id: 'results', label: 'Resultados', icon: '📊' },
-  { id: 'standings', label: 'Classificação', icon: '🏆' },
+  { id: 'standings', label: 'Ranking', icon: '🏆' },
 ];
 
 function App() {
@@ -26,9 +26,10 @@ function App() {
   if (loading) {
     return (
       <div className="min-h-screen bg-primary flex items-center justify-center">
-        <div className="text-center">
-          <div className="text-5xl mb-4">⚽</div>
+        <div className="text-center space-y-4">
+          <div className="text-5xl">⚽</div>
           <LoadingSpinner size="lg" />
+          <p className="text-white/30 text-xs font-medium tracking-widest uppercase">A carregar</p>
         </div>
       </div>
     );
@@ -48,19 +49,19 @@ function App() {
       <ToastContainer />
 
       {/* Header */}
-      <header className="bg-primary-dark border-b border-white/10 px-4 py-3 flex items-center justify-between sticky top-0 z-10">
-        <div className="flex items-center gap-2">
-          <span className="text-2xl">⚽</span>
-          <div>
-            <h1 className="text-gold font-bold text-sm leading-tight">Hikma</h1>
-            <p className="text-white/50 text-xs leading-tight">Copa 2026</p>
+      <header className="sticky top-0 z-20 bg-primary-dark/80 backdrop-blur-xl border-b border-white/10 px-4 py-3 flex items-center justify-between">
+        <div className="flex items-center gap-2.5">
+          <span className="text-xl">⚽</span>
+          <div className="flex items-baseline gap-1.5">
+            <span className="font-black text-lg leading-none text-hikma">hikma.</span>
+            <span className="text-white/35 text-xs font-medium">Copa 2026</span>
           </div>
         </div>
-        <div className="flex items-center gap-3">
-          <span className="text-white/70 text-sm">{user.username}</span>
+        <div className="flex items-center gap-2">
+          <span className="text-white/55 text-sm font-medium">{user.username}</span>
           <button
             onClick={logout}
-            className="text-white/50 text-xs hover:text-white transition-colors px-2 py-1 rounded-lg hover:bg-white/10"
+            className="text-white/35 text-xs hover:text-white/70 transition-colors px-2 py-1 rounded-lg hover:bg-white/10"
           >
             Sair
           </button>
@@ -77,17 +78,20 @@ function App() {
       </main>
 
       {/* Bottom tab bar */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-primary-dark border-t border-white/10 flex z-10 safe-area-inset-bottom">
+      <nav className="fixed bottom-0 left-0 right-0 bg-primary-dark/80 backdrop-blur-xl border-t border-white/10 flex z-10 safe-area-inset-bottom">
         {tabs.map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`flex-1 flex flex-col items-center justify-center py-2 gap-0.5 transition-colors ${
-              activeTab === tab.id ? 'text-gold' : 'text-white/50 hover:text-white/80'
+            className={`flex-1 flex flex-col items-center justify-center py-3 gap-0.5 transition-all relative ${
+              activeTab === tab.id ? 'text-gold' : 'text-white/35 hover:text-white/70'
             }`}
           >
-            <span className="text-lg leading-none">{tab.icon}</span>
-            <span className="text-xs leading-tight">{tab.label}</span>
+            {activeTab === tab.id && (
+              <div className="absolute top-0 inset-x-4 h-0.5 bg-gold rounded-full" />
+            )}
+            <span className="text-xl leading-none">{tab.icon}</span>
+            <span className="text-[10px] font-semibold leading-tight">{tab.label}</span>
           </button>
         ))}
       </nav>

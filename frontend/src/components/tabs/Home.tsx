@@ -136,8 +136,22 @@ export function Home() {
 
   return (
     <div className="space-y-4 pb-4">
+      {/* Hero photo */}
+      <div className="relative h-44 rounded-2xl overflow-hidden">
+        <div
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ backgroundImage: "url('/img/hikma-lab.jpg')" }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-primary-dark via-primary-dark/40 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-primary-dark/50 to-transparent" />
+        <div className="absolute bottom-4 left-4">
+          <div className="text-[10px] font-black text-hikma uppercase tracking-widest mb-1">Copa Hikma 2026</div>
+          <p className="text-white/55 text-xs font-medium">May the best bettor win</p>
+        </div>
+      </div>
+
       {/* Welcome header */}
-      <div className="bg-gradient-to-br from-primary-light to-primary rounded-2xl p-5 text-white">
+      <div className="bg-gradient-to-br from-primary-light to-primary rounded-2xl p-5 text-white border border-white/10">
         <div className="flex items-center justify-between">
           <div>
             <p className="text-white/70 text-sm">Olá,</p>

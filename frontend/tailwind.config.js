@@ -5,15 +5,23 @@ module.exports = {
     extend: {
       colors: {
         primary: {
-          DEFAULT: '#1a472a',
-          light: '#2d6a4f',
-          dark: '#0d2b19',
+          DEFAULT: '#0d1b10',
+          light: '#1a3320',
+          dark: '#060e09',
         },
         gold: {
-          DEFAULT: '#ffd700',
-          light: '#ffe566',
-          dark: '#c8a800',
+          DEFAULT: '#f5c518',
+          light: '#ffd700',
+          dark: '#d4a500',
         },
+        hikma: {
+          DEFAULT: '#e63329',
+          light: '#ff4f45',
+          dark: '#b52520',
+        },
+      },
+      fontFamily: {
+        sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
       },
     },
   },
