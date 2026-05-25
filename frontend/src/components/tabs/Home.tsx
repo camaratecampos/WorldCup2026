@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import api from '../../api';
 import { Game, StandingEntry } from '../../types';
-import { getFlag, allTeams } from '../../utils/flags';
+import { allTeams } from '../../utils/flags';
+import { Flag } from '../ui/Flag';
 import { LoadingSpinner } from '../ui/LoadingSpinner';
 import { showToast } from '../ui/Toast';
 
@@ -114,7 +115,7 @@ export function Home() {
         </h3>
         {user?.teamPick ? (
           <div className="flex items-center gap-3">
-            <span className="text-3xl">{getFlag(user.teamPick)}</span>
+            <Flag team={user.teamPick} size="lg" />
             <div>
               <div className="font-semibold text-white">{user.teamPick}</div>
               <div className="text-xs text-white/60">Escolha efetuada</div>
@@ -138,9 +139,7 @@ export function Home() {
                 >
                   <option value="">-- Escolhe uma equipa --</option>
                   {allTeams.map((t) => (
-                    <option key={t} value={t}>
-                      {getFlag(t)} {t}
-                    </option>
+                    <option key={t} value={t}>{t}</option>
                   ))}
                 </select>
                 <div className="flex gap-2">
@@ -176,9 +175,9 @@ export function Home() {
             {upcomingGames.map((game) => (
               <div key={game.id} className="bg-black/20 rounded-xl p-3 flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <span className="text-lg">{getFlag(game.home_team)}</span>
+                  <Flag team={game.home_team} size="sm" />
                   <span className="text-white/60 text-xs">vs</span>
-                  <span className="text-lg">{getFlag(game.away_team)}</span>
+                  <Flag team={game.away_team} size="sm" />
                 </div>
                 <div className="text-right">
                   <div className="text-white text-xs">{game.home_team} vs {game.away_team}</div>
@@ -213,7 +212,7 @@ export function Home() {
                 </span>
                 <span className="text-white text-sm font-medium">{entry.username}</span>
                 {entry.teamPick && (
-                  <span className="text-xs">{getFlag(entry.teamPick)}</span>
+                  <Flag team={entry.teamPick} size="sm" />
                 )}
               </div>
               <span className="text-gold font-bold text-sm">{entry.totalPoints}pt</span>

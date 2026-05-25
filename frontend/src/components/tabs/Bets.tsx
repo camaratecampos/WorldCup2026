@@ -1,8 +1,8 @@
 import { useEffect, useState, useCallback } from 'react';
 import api from '../../api';
 import { Game, Bet } from '../../types';
-import { getFlag } from '../../utils/flags';
 import { LoadingSpinner } from '../ui/LoadingSpinner';
+import { Flag } from '../ui/Flag';
 import { showToast } from '../ui/Toast';
 import { useAuth } from '../../context/AuthContext';
 
@@ -74,7 +74,7 @@ function GameCard({ game, bet, onBetPlaced }: GameCardProps) {
       <div className="flex items-center justify-between">
         {/* Home */}
         <div className="flex flex-col items-center gap-1 flex-1">
-          <span className="text-3xl">{getFlag(game.home_team)}</span>
+          <Flag team={game.home_team} size="lg" />
           <span className="text-white text-xs font-medium text-center leading-tight">{game.home_team}</span>
         </div>
 
@@ -123,7 +123,7 @@ function GameCard({ game, bet, onBetPlaced }: GameCardProps) {
 
         {/* Away */}
         <div className="flex flex-col items-center gap-1 flex-1">
-          <span className="text-3xl">{getFlag(game.away_team)}</span>
+          <Flag team={game.away_team} size="lg" />
           <span className="text-white text-xs font-medium text-center leading-tight">{game.away_team}</span>
         </div>
       </div>
@@ -195,7 +195,7 @@ function AdminResultCard({ game, onResultSet }: AdminCardProps) {
     <div className="bg-orange-900/30 rounded-2xl p-4 border border-orange-500/30">
       <div className="text-orange-300 text-xs mb-2 font-semibold">ADMIN: Inserir Resultado</div>
       <div className="flex items-center gap-2">
-        <span className="text-sm text-white flex-1">{getFlag(game.home_team)} {game.home_team}</span>
+        <span className="text-sm text-white flex-1 flex items-center gap-1"><Flag team={game.home_team} size="sm" />{game.home_team}</span>
         <input
           type="number"
           min="0"
@@ -211,7 +211,7 @@ function AdminResultCard({ game, onResultSet }: AdminCardProps) {
           onChange={(e) => setAwayInput(e.target.value)}
           className="w-10 bg-primary-dark border border-orange-500/40 rounded-lg text-center text-white text-sm py-1"
         />
-        <span className="text-sm text-white flex-1 text-right">{game.away_team} {getFlag(game.away_team)}</span>
+        <span className="text-sm text-white flex-1 text-right flex items-center justify-end gap-1">{game.away_team}<Flag team={game.away_team} size="sm" /></span>
       </div>
       <button
         onClick={handleSave}

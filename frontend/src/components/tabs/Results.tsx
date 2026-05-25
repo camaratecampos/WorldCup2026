@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import api from '../../api';
 import { GameWithBet, TeamStats } from '../../types';
-import { getFlag } from '../../utils/flags';
+import { Flag } from '../ui/Flag';
 import { LoadingSpinner } from '../ui/LoadingSpinner';
 
 type SubTab = 'games' | 'groups' | 'third';
@@ -67,7 +67,7 @@ function ResultCard({ game }: { game: GameWithBet }) {
       </div>
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2 flex-1">
-          <span className="text-xl">{getFlag(game.home_team)}</span>
+          <Flag team={game.home_team} size="sm" />
           <span className="text-white text-sm font-medium truncate">{game.home_team}</span>
         </div>
         <div className="flex flex-col items-center px-3">
@@ -82,7 +82,7 @@ function ResultCard({ game }: { game: GameWithBet }) {
         </div>
         <div className="flex items-center gap-2 flex-1 justify-end">
           <span className="text-white text-sm font-medium truncate text-right">{game.away_team}</span>
-          <span className="text-xl">{getFlag(game.away_team)}</span>
+          <Flag team={game.away_team} size="sm" />
         </div>
       </div>
     </div>
@@ -123,7 +123,7 @@ function GroupTable({ group, teams }: { group: string; teams: TeamStats[] }) {
                 }`}
               >
                 <td className="px-3 py-2 text-white font-medium flex items-center gap-1.5">
-                  <span>{getFlag(team.team)}</span>
+                  <Flag team={team.team} size="sm" />
                   <span className="truncate max-w-[80px]">{team.team}</span>
                 </td>
                 <td className="text-center px-2 py-2 text-white/70">{team.played}</td>
@@ -170,7 +170,7 @@ function ThirdPlaceTable({ teams }: { teams: (TeamStats & { group: string })[] }
               >
                 <td className="text-center px-2 py-2 text-white/50">{idx + 1}</td>
                 <td className="px-3 py-2 text-white font-medium flex items-center gap-1.5">
-                  <span>{getFlag(team.team)}</span>
+                  <Flag team={team.team} size="sm" />
                   <span className="truncate max-w-[80px]">{team.team}</span>
                 </td>
                 <td className="text-center px-2 py-2 text-white/50">{team.group}</td>

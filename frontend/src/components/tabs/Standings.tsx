@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import api from '../../api';
 import { StandingEntry } from '../../types';
-import { getFlag } from '../../utils/flags';
+import { Flag } from '../ui/Flag';
 import { LoadingSpinner } from '../ui/LoadingSpinner';
 import { useAuth } from '../../context/AuthContext';
 
@@ -66,7 +66,7 @@ export function Standings() {
                     <span className="text-xs text-white/40">{entry.gamesBet} apostas</span>
                     {entry.teamPick && (
                       <span className="text-xs text-white/50 flex items-center gap-1">
-                        <span>{getFlag(entry.teamPick)}</span>
+                        <Flag team={entry.teamPick} size="sm" />
                         <span>{entry.teamPick}</span>
                       </span>
                     )}

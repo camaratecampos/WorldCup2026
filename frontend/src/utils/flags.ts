@@ -1,71 +1,42 @@
-export const teamFlags: Record<string, string> = {
+const teamCodes: Record<string, string> = {
   // Group A
-  Mexico: '🇲🇽',
-  USA: '🇺🇸',
-  Canada: '🇨🇦',
-  Panama: '🇵🇦',
+  Mexico: 'mx', USA: 'us', Canada: 'ca', Panama: 'pa',
   // Group B
-  Germany: '🇩🇪',
-  Japan: '🇯🇵',
-  Chile: '🇨🇱',
-  'South Africa': '🇿🇦',
+  Germany: 'de', Japan: 'jp', Chile: 'cl', 'South Africa': 'za',
   // Group C
-  Spain: '🇪🇸',
-  Brazil: '🇧🇷',
-  'Ivory Coast': '🇨🇮',
-  Serbia: '🇷🇸',
+  Spain: 'es', Brazil: 'br', 'Ivory Coast': 'ci', Serbia: 'rs',
   // Group D
-  France: '🇫🇷',
-  Argentina: '🇦🇷',
-  'New Zealand': '🇳🇿',
-  Morocco: '🇲🇦',
+  France: 'fr', Argentina: 'ar', 'New Zealand': 'nz', Morocco: 'ma',
   // Group E
-  England: '🏴󠁧󠁢󠁥󠁮󠁧󠁿',
-  Colombia: '🇨🇴',
-  Ukraine: '🇺🇦',
-  Senegal: '🇸🇳',
+  England: 'gb-eng', Colombia: 'co', Ukraine: 'ua', Senegal: 'sn',
   // Group F
-  Portugal: '🇵🇹',
-  Netherlands: '🇳🇱',
-  Ecuador: '🇪🇨',
-  'Saudi Arabia': '🇸🇦',
+  Portugal: 'pt', Netherlands: 'nl', Ecuador: 'ec', 'Saudi Arabia': 'sa',
   // Group G
-  Belgium: '🇧🇪',
-  Uruguay: '🇺🇾',
-  Algeria: '🇩🇿',
-  Nigeria: '🇳🇬',
+  Belgium: 'be', Uruguay: 'uy', Algeria: 'dz', Nigeria: 'ng',
   // Group H
-  Italy: '🇮🇹',
-  Australia: '🇦🇺',
-  'South Korea': '🇰🇷',
-  Iran: '🇮🇷',
+  Italy: 'it', Australia: 'au', 'South Korea': 'kr', Iran: 'ir',
   // Group I
-  Croatia: '🇭🇷',
-  Egypt: '🇪🇬',
-  Switzerland: '🇨🇭',
-  Thailand: '🇹🇭',
+  Croatia: 'hr', Egypt: 'eg', Switzerland: 'ch', Thailand: 'th',
   // Group J
-  Turkey: '🇹🇷',
-  Denmark: '🇩🇰',
-  Cameroon: '🇨🇲',
-  Honduras: '🇭🇳',
+  Turkey: 'tr', Denmark: 'dk', Cameroon: 'cm', Honduras: 'hn',
   // Group K
-  Austria: '🇦🇹',
-  Paraguay: '🇵🇾',
-  Ghana: '🇬🇭',
-  'El Salvador': '🇸🇻',
+  Austria: 'at', Paraguay: 'py', Ghana: 'gh', 'El Salvador': 'sv',
   // Group L
-  Poland: '🇵🇱',
-  Peru: '🇵🇪',
-  'Congo DR': '🇨🇩',
-  Tunisia: '🇹🇳',
+  Poland: 'pl', Peru: 'pe', 'Congo DR': 'cd', Tunisia: 'tn',
 };
 
-export function getFlag(team: string): string {
-  return teamFlags[team] || '🏳️';
+export function getFlagUrl(team: string): string {
+  const code = teamCodes[team];
+  if (!code) return '';
+  return `https://flagcdn.com/w40/${code}.png`;
 }
 
-export const allTeams = Object.keys(teamFlags);
+// kept for backwards compat but prefer getFlagUrl
+export function getFlag(team: string): string {
+  return getFlagUrl(team);
+}
+
+export const allTeams = Object.keys(teamCodes);
 
 export const teamsByGroup: Record<string, string[]> = {
   A: ['Mexico', 'USA', 'Canada', 'Panama'],
