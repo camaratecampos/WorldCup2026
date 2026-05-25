@@ -1,7 +1,6 @@
 {
   "name": "worldcup2026",
   "version": "1.0.0",
-  "type": "module",
   "scripts": {
     "dev": "concurrently \"npm run dev:server\" \"vite\"",
     "dev:server": "ts-node-dev --respawn --transpile-only --esm server/dev-server.ts",
