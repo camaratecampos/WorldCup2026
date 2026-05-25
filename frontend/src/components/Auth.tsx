@@ -47,7 +47,7 @@ export function Auth() {
       {/* Background photo */}
       <div
         className="absolute inset-0 bg-cover bg-center scale-105"
-        style={{ backgroundImage: "url('/img/hikma-cleanroom.jpg')" }}
+        style={{ backgroundImage: "url('/hikma-cleanroom.jpg')" }}
       />
       {/* Overlay */}
       <div className="absolute inset-0 bg-primary/75 backdrop-blur-[2px]" />
