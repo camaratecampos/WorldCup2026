@@ -1,0 +1,226 @@
+import { useEffect, useState } from 'react';
+import { useAuth } from '../../context/AuthContext';
+import api from '../../api';
+import { Game, StandingEntry } from '../../types';
+import { getFlag, allTeams } from '../../utils/flags';
+import { LoadingSpinner } from '../ui/LoadingSpinner';
+import { showToast } from '../ui/Toast';
+
+function formatDate(dateStr: string): string {
+  const d = new Date(dateStr);
+  return d.toLocaleDateString('pt-PT', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+}
+
+export function Home() {
+  const { user, refreshUser } = useAuth();
+  const [standings, setStandings] = useState<StandingEntry[]>([]);
+  const [upcomingGames, setUpcomingGames] = useState<Game[]>([]);
+  const [myBets, setMyBets] = useState<Set<number>>(new Set());
+  const [loading, setLoading] = useState(true);
+  const [teamPickOpen, setTeamPickOpen] = useState(false);
+  const [selectedTeam, setSelectedTeam] = useState('');
+  const [savingTeamPick, setSavingTeamPick] = useState(false);
+
+  const now = new Date();
+  const tournamentStart = new Date('2026-06-11T00:00:00');
+  const canPickTeam = now < tournamentStart;
+
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  async function loadData() {
+    setLoading(true);
+    try {
+      const [standingsData, gamesData, betsData] = await Promise.all([
+        api.getStandings(),
+        api.getGames(),
+        api.getMyBets(),
+      ]);
+      setStandings(standingsData);
+      const betGameIds = new Set(betsData.map((b) => b.game_id));
+      setMyBets(betGameIds);
+
+      // Upcoming games without bets, in next 7 days
+      const in7days = new Date(now.getTime() + 7 * 24 * 3600 * 1000);
+      const upcoming = gamesData
+        .filter((g) => new Date(g.match_date) > now && new Date(g.match_date) < in7days && g.status === 'scheduled' && !betGameIds.has(g.id))
+        .slice(0, 3);
+      setUpcomingGames(upcoming);
+    } catch (err) {
+      // ignore
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleTeamPick() {
+    if (!selectedTeam) {
+      showToast('Seleciona uma equipa', 'error');
+      return;
+    }
+    setSavingTeamPick(true);
+    try {
+      await api.setTeamPick(selectedTeam);
+      await refreshUser();
+      setTeamPickOpen(false);
+      showToast(`Escolheste ${selectedTeam}!`, 'success');
+    } catch (err: unknown) {
+      showToast(err instanceof Error ? err.message : 'Erro ao escolher equipa', 'error');
+    } finally {
+      setSavingTeamPick(false);
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <LoadingSpinner size="lg" />
+      </div>
+    );
+  }
+
+  const myRank = standings.find((s) => s.username === user?.username);
+  const top5 = standings.slice(0, 5);
+
+  return (
+    <div className="space-y-4 pb-4">
+      {/* Welcome header */}
+      <div className="bg-gradient-to-br from-primary-light to-primary rounded-2xl p-5 text-white">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-white/70 text-sm">Olá,</p>
+            <h2 className="text-xl font-bold">{user?.username}</h2>
+          </div>
+          <div className="text-right">
+            <div className="text-3xl font-bold text-gold">{myRank?.totalPoints ?? 0}</div>
+            <div className="text-xs text-white/70">pontos</div>
+          </div>
+        </div>
+        {myRank && (
+          <div className="mt-3 flex items-center gap-2">
+            <span className="bg-gold text-primary-dark text-xs font-bold px-2 py-0.5 rounded-full">
+              #{myRank.rank}
+            </span>
+            <span className="text-xs text-white/70">no ranking</span>
+          </div>
+        )}
+      </div>
+
+      {/* Team pick */}
+      <div className="bg-white/10 rounded-2xl p-4 border border-white/10">
+        <h3 className="font-bold text-white mb-3 flex items-center gap-2">
+          <span>🏆</span> A Minha Equipa
+        </h3>
+        {user?.teamPick ? (
+          <div className="flex items-center gap-3">
+            <span className="text-3xl">{getFlag(user.teamPick)}</span>
+            <div>
+              <div className="font-semibold text-white">{user.teamPick}</div>
+              <div className="text-xs text-white/60">Escolha efetuada</div>
+            </div>
+          </div>
+        ) : canPickTeam ? (
+          <>
+            {!teamPickOpen ? (
+              <button
+                onClick={() => setTeamPickOpen(true)}
+                className="bg-gold text-primary-dark font-bold px-4 py-2 rounded-xl text-sm hover:bg-gold-light transition-colors"
+              >
+                Escolher equipa vencedora
+              </button>
+            ) : (
+              <div className="space-y-3">
+                <select
+                  value={selectedTeam}
+                  onChange={(e) => setSelectedTeam(e.target.value)}
+                  className="w-full bg-primary border border-white/20 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-gold"
+                >
+                  <option value="">-- Escolhe uma equipa --</option>
+                  {allTeams.map((t) => (
+                    <option key={t} value={t}>
+                      {getFlag(t)} {t}
+                    </option>
+                  ))}
+                </select>
+                <div className="flex gap-2">
+                  <button
+                    onClick={handleTeamPick}
+                    disabled={savingTeamPick}
+                    className="bg-gold text-primary-dark font-bold px-4 py-2 rounded-xl text-sm disabled:opacity-50"
+                  >
+                    {savingTeamPick ? 'A guardar...' : 'Confirmar'}
+                  </button>
+                  <button
+                    onClick={() => setTeamPickOpen(false)}
+                    className="bg-white/10 text-white px-4 py-2 rounded-xl text-sm"
+                  >
+                    Cancelar
+                  </button>
+                </div>
+              </div>
+            )}
+          </>
+        ) : (
+          <p className="text-white/60 text-sm">O torneio já começou. Escolha bloqueada.</p>
+        )}
+      </div>
+
+      {/* Próximas Apostas */}
+      {upcomingGames.length > 0 && (
+        <div className="bg-white/10 rounded-2xl p-4 border border-white/10">
+          <h3 className="font-bold text-white mb-3 flex items-center gap-2">
+            <span>⏰</span> Próximas Apostas
+          </h3>
+          <div className="space-y-2">
+            {upcomingGames.map((game) => (
+              <div key={game.id} className="bg-black/20 rounded-xl p-3 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="text-lg">{getFlag(game.home_team)}</span>
+                  <span className="text-white/60 text-xs">vs</span>
+                  <span className="text-lg">{getFlag(game.away_team)}</span>
+                </div>
+                <div className="text-right">
+                  <div className="text-white text-xs">{game.home_team} vs {game.away_team}</div>
+                  <div className="text-white/60 text-xs">{formatDate(game.match_date)}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Mini Leaderboard */}
+      <div className="bg-white/10 rounded-2xl p-4 border border-white/10">
+        <h3 className="font-bold text-white mb-3 flex items-center gap-2">
+          <span>🥇</span> Classificação
+        </h3>
+        <div className="space-y-2">
+          {top5.map((entry) => (
+            <div
+              key={entry.userId}
+              className={`flex items-center justify-between py-2 px-3 rounded-xl ${
+                entry.username === user?.username ? 'bg-gold/20 border border-gold/40' : 'bg-black/20'
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <span
+                  className={`text-sm font-bold w-5 text-center ${
+                    entry.rank === 1 ? 'text-gold' : entry.rank === 2 ? 'text-gray-300' : entry.rank === 3 ? 'text-amber-600' : 'text-white/60'
+                  }`}
+                >
+                  {entry.rank}
+                </span>
+                <span className="text-white text-sm font-medium">{entry.username}</span>
+                {entry.teamPick && (
+                  <span className="text-xs">{getFlag(entry.teamPick)}</span>
+                )}
+              </div>
+              <span className="text-gold font-bold text-sm">{entry.totalPoints}pt</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
