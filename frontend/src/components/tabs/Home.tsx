@@ -140,7 +140,7 @@ export function Home() {
       <div className="relative h-44 rounded-2xl overflow-hidden">
         <div
           className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: "url('/hikma-lab.jpg')" }}
+          style={{ backgroundImage: "url('/hikma-lab.png')" }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-primary-dark via-primary-dark/40 to-transparent" />
         <div className="absolute inset-0 bg-gradient-to-r from-primary-dark/50 to-transparent" />
