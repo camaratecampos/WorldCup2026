@@ -79,18 +79,15 @@ app.post('/api/team-pick', authMiddleware, async (req: AuthRequest, res: Respons
   }
 });
 
+// On Vercel (serverless) just init the DB; locally start the HTTP server
+const dbReady = initDb().catch(console.error);
+
+// Ensure DB is ready before any request is handled
+app.use((_req, _res, next) => { dbReady.then(() => next()).catch(next); });
+
 export default app;
 
-const PORT = process.env.PORT || 3001;
-
-initDb()
-  .then(() => {
-    console.log('Database initialized');
-    app.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`);
-    });
-  })
-  .catch((err) => {
-    console.error('Failed to initialize database:', err);
-    process.exit(1);
-  });
+if (!process.env.VERCEL) {
+  const PORT = process.env.PORT || 3001;
+  dbReady.then(() => app.listen(PORT, () => console.log(`Server running on port ${PORT}`)));
+}
