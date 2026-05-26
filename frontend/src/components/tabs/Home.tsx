@@ -72,6 +72,9 @@ export function Home() {
   const [teamPickOpen, setTeamPickOpen] = useState(false);
   const [selectedTeam, setSelectedTeam] = useState('');
   const [savingTeamPick, setSavingTeamPick] = useState(false);
+  const [editingName, setEditingName] = useState(false);
+  const [newName, setNewName] = useState('');
+  const [savingName, setSavingName] = useState(false);
 
   const now = new Date();
   const canPickTeam = now < TOURNAMENT_START;
@@ -102,6 +105,22 @@ export function Home() {
       // ignore
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function handleRename() {
+    if (!newName.trim()) return;
+    setSavingName(true);
+    try {
+      const result = await api.renameMe(newName.trim());
+      localStorage.setItem('token', result.token);
+      await refreshUser();
+      setEditingName(false);
+      showToast('Nome alterado!', 'success');
+    } catch (err: unknown) {
+      showToast(err instanceof Error ? err.message : 'Erro ao alterar nome', 'error');
+    } finally {
+      setSavingName(false);
     }
   }
 
@@ -155,7 +174,38 @@ export function Home() {
         <div className="flex items-center justify-between">
           <div>
             <p className="text-white/70 text-sm">Olá,</p>
-            <h2 className="text-xl font-bold">{user?.username}</h2>
+            {editingName ? (
+              <div className="flex items-center gap-2 mt-1">
+                <input
+                  type="text"
+                  value={newName}
+                  onChange={(e) => setNewName(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleRename()}
+                  className="bg-white/20 border border-white/40 rounded-lg px-2 py-1 text-white text-sm w-32 focus:outline-none focus:border-gold"
+                  placeholder={user?.username}
+                  autoFocus
+                />
+                <button
+                  onClick={handleRename}
+                  disabled={savingName}
+                  className="text-gold text-xs font-black disabled:opacity-50"
+                >
+                  {savingName ? '...' : 'OK'}
+                </button>
+                <button onClick={() => setEditingName(false)} className="text-white/40 text-xs">✕</button>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2">
+                <h2 className="text-xl font-bold">{user?.username}</h2>
+                <button
+                  onClick={() => { setNewName(''); setEditingName(true); }}
+                  className="text-white/30 hover:text-white/60 transition-colors text-sm"
+                  title="Alterar nome"
+                >
+                  ✏️
+                </button>
+              </div>
+            )}
           </div>
           <div className="text-right">
             <div className="text-3xl font-bold text-gold">{myRank?.totalPoints ?? 0}</div>

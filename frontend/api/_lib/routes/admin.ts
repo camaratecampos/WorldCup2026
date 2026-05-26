@@ -75,4 +75,47 @@ router.post('/sync', authMiddleware, async (req: AuthRequest, res: Response): Pr
   }
 });
 
+// GET /api/admin/users - list all users
+router.get('/users', authMiddleware, async (req: AuthRequest, res: Response): Promise<void> => {
+  if (!requireAdmin(req, res)) return;
+  try {
+    const users = await query<{ id: number; username: string }>(
+      'SELECT id, username FROM users ORDER BY id ASC'
+    );
+    res.json(users);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// PUT /api/admin/users/:userId/username - admin renames any user
+router.put('/users/:userId/username', authMiddleware, async (req: AuthRequest, res: Response): Promise<void> => {
+  if (!requireAdmin(req, res)) return;
+  const userId = parseInt(req.params.userId, 10);
+  const { username: newUsername } = req.body;
+
+  if (!newUsername || typeof newUsername !== 'string' || newUsername.trim().length < 3) {
+    res.status(400).json({ error: 'O nome deve ter pelo menos 3 caracteres' });
+    return;
+  }
+  const trimmed = newUsername.trim();
+
+  try {
+    const existing = await queryOne<{ id: number }>(
+      'SELECT id FROM users WHERE LOWER(username) = LOWER($1) AND id != $2',
+      [trimmed, userId]
+    );
+    if (existing) {
+      res.status(409).json({ error: 'Nome já está em uso' });
+      return;
+    }
+    await execute('UPDATE users SET username = $1 WHERE id = $2', [trimmed, userId]);
+    res.json({ success: true, userId, username: trimmed });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 export default router;

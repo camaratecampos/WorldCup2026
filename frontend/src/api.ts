@@ -45,6 +45,12 @@ export const api = {
   // User
   getMe: () => request<{ id: number; username: string; teamPick: string | null; isAdmin: boolean }>('/me'),
 
+  renameMe: (username: string) =>
+    request<{ token: string; username: string }>('/me/username', {
+      method: 'PUT',
+      body: JSON.stringify({ username }),
+    }),
+
   setTeamPick: (team: string) =>
     request<{ success: boolean; team: string }>('/team-pick', {
       method: 'POST',
@@ -86,6 +92,15 @@ export const api = {
 
   syncESPN: () =>
     request<{ success: boolean; synced: number; errors: string[] }>('/admin/sync', { method: 'POST' }),
+
+  adminGetUsers: () =>
+    request<{ id: number; username: string }[]>('/admin/users'),
+
+  adminRenameUser: (userId: number, username: string) =>
+    request<{ success: boolean; userId: number; username: string }>(`/admin/users/${userId}/username`, {
+      method: 'PUT',
+      body: JSON.stringify({ username }),
+    }),
 };
 
 export default api;

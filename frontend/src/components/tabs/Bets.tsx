@@ -238,6 +238,10 @@ export function Bets() {
   const [dates, setDates] = useState<string[]>([]);
   const [adminMode, setAdminMode] = useState(false);
   const [syncing, setSyncing] = useState(false);
+  const [users, setUsers] = useState<{ id: number; username: string }[]>([]);
+  const [renamingUserId, setRenamingUserId] = useState<number | null>(null);
+  const [renameInput, setRenameInput] = useState('');
+  const [renamingSaving, setRenamingSaving] = useState(false);
 
   const loadGames = useCallback(async () => {
     setLoading(true);
@@ -267,6 +271,28 @@ export function Bets() {
   useEffect(() => {
     loadGames();
   }, []);
+
+  useEffect(() => {
+    if (adminMode && users.length === 0) {
+      api.adminGetUsers().then(setUsers).catch(() => {});
+    }
+  }, [adminMode]);
+
+  async function handleAdminRename(userId: number) {
+    if (!renameInput.trim()) return;
+    setRenamingSaving(true);
+    try {
+      await api.adminRenameUser(userId, renameInput.trim());
+      showToast('Nome alterado!', 'success');
+      const updated = await api.adminGetUsers();
+      setUsers(updated);
+      setRenamingUserId(null);
+    } catch (err: unknown) {
+      showToast(err instanceof Error ? err.message : 'Erro ao alterar nome', 'error');
+    } finally {
+      setRenamingSaving(false);
+    }
+  }
 
   async function handleSync() {
     setSyncing(true);
@@ -313,6 +339,49 @@ export function Bets() {
           >
             {syncing ? 'A sincronizar ESPN...' : '🔄 Sincronizar jogos / resultados (ESPN)'}
           </button>
+
+          {adminMode && (
+            <div className="border-t border-orange-500/20 pt-2">
+              <div className="text-orange-300 text-xs font-bold mb-2">Utilizadores</div>
+              <div className="space-y-1.5">
+                {users.map((u) => (
+                  <div key={u.id} className="flex items-center gap-2">
+                    {renamingUserId === u.id ? (
+                      <>
+                        <input
+                          type="text"
+                          value={renameInput}
+                          onChange={(e) => setRenameInput(e.target.value)}
+                          onKeyDown={(e) => e.key === 'Enter' && handleAdminRename(u.id)}
+                          className="flex-1 bg-primary-dark border border-orange-500/40 rounded-lg px-2 py-1 text-white text-xs focus:outline-none focus:border-orange-400"
+                          placeholder={u.username}
+                          autoFocus
+                        />
+                        <button
+                          onClick={() => handleAdminRename(u.id)}
+                          disabled={renamingSaving}
+                          className="text-orange-300 text-xs font-black disabled:opacity-50"
+                        >
+                          {renamingSaving ? '...' : 'OK'}
+                        </button>
+                        <button onClick={() => setRenamingUserId(null)} className="text-white/40 text-xs">✕</button>
+                      </>
+                    ) : (
+                      <>
+                        <span className="flex-1 text-white/80 text-xs font-medium">{u.username}</span>
+                        <button
+                          onClick={() => { setRenamingUserId(u.id); setRenameInput(''); }}
+                          className="text-orange-400/60 hover:text-orange-300 text-xs transition-colors"
+                        >
+                          ✏️
+                        </button>
+                      </>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       )}
 
