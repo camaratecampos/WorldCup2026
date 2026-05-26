@@ -66,9 +66,9 @@ export function Rules() {
           <div className="flex gap-3 items-start bg-white/5 rounded-xl p-3 border border-white/8">
             <span className="text-xl mt-0.5">⏱️</span>
             <div>
-              <div className="text-white font-semibold text-sm">Conta o resultado aos 90 minutos</div>
+              <div className="text-white font-semibold text-sm">Penáltis não contam</div>
               <div className="text-white/50 text-xs mt-0.5 leading-relaxed">
-                Em jogos que terminam em prolongamento ou penáltis, o que conta para a aposta é o resultado ao fim dos 90 minutos regulamentares — não o resultado final.
+                O que conta para a aposta é o resultado ao fim do tempo regulamentar ou prolongamento (90 ou 120 minutos). Se o jogo for decidido nos penáltis, conta como empate.
               </div>
             </div>
           </div>
