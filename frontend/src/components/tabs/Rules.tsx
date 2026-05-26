@@ -50,6 +50,31 @@ export function Rules() {
         </div>
       </div>
 
+      {/* Betting rules */}
+      <div className="bg-white/8 rounded-2xl p-5 border border-white/10 backdrop-blur-sm">
+        <h2 className="text-lg font-black text-gold mb-4">Regras das Apostas</h2>
+        <div className="space-y-3">
+          <div className="flex gap-3 items-start bg-white/5 rounded-xl p-3 border border-white/8">
+            <span className="text-xl mt-0.5">🔒</span>
+            <div>
+              <div className="text-white font-semibold text-sm">Apostas fecham no início do jogo</div>
+              <div className="text-white/50 text-xs mt-0.5 leading-relaxed">
+                Não é possível apostar nem editar uma aposta após o apito inicial. O prazo é a hora de início oficial do jogo.
+              </div>
+            </div>
+          </div>
+          <div className="flex gap-3 items-start bg-white/5 rounded-xl p-3 border border-white/8">
+            <span className="text-xl mt-0.5">⏱️</span>
+            <div>
+              <div className="text-white font-semibold text-sm">Conta o resultado aos 90 minutos</div>
+              <div className="text-white/50 text-xs mt-0.5 leading-relaxed">
+                Em jogos que terminam em prolongamento ou penáltis, o que conta para a aposta é o resultado ao fim dos 90 minutos regulamentares — não o resultado final.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Scoring rules */}
       <div className="bg-white/8 rounded-2xl p-5 border border-white/10 backdrop-blur-sm">
         <h2 className="text-lg font-black text-gold mb-4">Pontuação</h2>
