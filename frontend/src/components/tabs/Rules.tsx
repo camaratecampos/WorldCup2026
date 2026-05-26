@@ -125,8 +125,9 @@ export function Rules() {
       <div className="bg-white/8 rounded-2xl p-5 border border-white/10 backdrop-blur-sm">
         <h2 className="text-lg font-black text-gold mb-4">Aposta na Equipa</h2>
         <p className="text-white/55 text-sm mb-4 leading-relaxed">
-          Antes do início do torneio, cada participante escolhe uma equipa vencedora.
-          Não é possível alterar após o início do torneio.
+          Cada participante escolhe uma equipa vencedora antes do início do torneio.
+          Podes alterar a tua escolha quantas vezes quiseres até ao apito inicial do primeiro jogo.
+          Após o início do torneio a escolha fica bloqueada.
         </p>
 
         <div className="space-y-2">

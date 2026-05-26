@@ -230,55 +230,73 @@ export function Home() {
         <h3 className="font-bold text-white mb-3 flex items-center gap-2">
           <span>🏆</span> A Minha Equipa
         </h3>
-        {user?.teamPick ? (
-          <div className="flex items-center gap-3">
-            <Flag team={user.teamPick} size="lg" />
-            <div>
-              <div className="font-semibold text-white">{user.teamPick}</div>
-              <div className="text-xs text-white/60">Escolha efetuada</div>
-            </div>
-          </div>
-        ) : canPickTeam ? (
-          <>
-            {!teamPickOpen ? (
+        {canPickTeam ? (
+          !teamPickOpen ? (
+            user?.teamPick ? (
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <Flag team={user.teamPick} size="lg" />
+                  <div>
+                    <div className="font-semibold text-white">{user.teamPick}</div>
+                    <div className="text-xs text-white/50">Podes alterar até ao início</div>
+                  </div>
+                </div>
+                <button
+                  onClick={() => { setSelectedTeam(user.teamPick!); setTeamPickOpen(true); }}
+                  className="bg-white/10 text-white/70 text-xs font-semibold px-3 py-1.5 rounded-xl hover:bg-white/20 transition-colors"
+                >
+                  Alterar
+                </button>
+              </div>
+            ) : (
               <button
                 onClick={() => setTeamPickOpen(true)}
                 className="bg-gold text-primary-dark font-bold px-4 py-2 rounded-xl text-sm hover:bg-gold-light transition-colors"
               >
                 Escolher equipa vencedora
               </button>
-            ) : (
-              <div className="space-y-3">
-                <select
-                  value={selectedTeam}
-                  onChange={(e) => setSelectedTeam(e.target.value)}
-                  className="w-full bg-primary border border-white/20 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-gold"
+            )
+          ) : (
+            <div className="space-y-3">
+              <select
+                value={selectedTeam}
+                onChange={(e) => setSelectedTeam(e.target.value)}
+                className="w-full bg-primary border border-white/20 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-gold"
+              >
+                <option value="">-- Escolhe uma equipa --</option>
+                {allTeams.map((t) => (
+                  <option key={t} value={t}>{t}</option>
+                ))}
+              </select>
+              <div className="flex gap-2">
+                <button
+                  onClick={handleTeamPick}
+                  disabled={savingTeamPick}
+                  className="bg-gold text-primary-dark font-bold px-4 py-2 rounded-xl text-sm disabled:opacity-50"
                 >
-                  <option value="">-- Escolhe uma equipa --</option>
-                  {allTeams.map((t) => (
-                    <option key={t} value={t}>{t}</option>
-                  ))}
-                </select>
-                <div className="flex gap-2">
-                  <button
-                    onClick={handleTeamPick}
-                    disabled={savingTeamPick}
-                    className="bg-gold text-primary-dark font-bold px-4 py-2 rounded-xl text-sm disabled:opacity-50"
-                  >
-                    {savingTeamPick ? 'A guardar...' : 'Confirmar'}
-                  </button>
-                  <button
-                    onClick={() => setTeamPickOpen(false)}
-                    className="bg-white/10 text-white px-4 py-2 rounded-xl text-sm"
-                  >
-                    Cancelar
-                  </button>
-                </div>
+                  {savingTeamPick ? 'A guardar...' : 'Confirmar'}
+                </button>
+                <button
+                  onClick={() => setTeamPickOpen(false)}
+                  className="bg-white/10 text-white px-4 py-2 rounded-xl text-sm"
+                >
+                  Cancelar
+                </button>
               </div>
-            )}
-          </>
+            </div>
+          )
         ) : (
-          <p className="text-white/60 text-sm">O torneio já começou. Escolha bloqueada.</p>
+          user?.teamPick ? (
+            <div className="flex items-center gap-3">
+              <Flag team={user.teamPick} size="lg" />
+              <div>
+                <div className="font-semibold text-white">{user.teamPick}</div>
+                <div className="text-xs text-white/50">Escolha bloqueada</div>
+              </div>
+            </div>
+          ) : (
+            <p className="text-white/60 text-sm">O torneio já começou. Escolha bloqueada.</p>
+          )
         )}
       </div>
 
