@@ -50,7 +50,7 @@ function Countdown() {
   return (
     <div className="bg-white/10 rounded-2xl p-4 border border-white/10">
       <h3 className="font-bold text-white mb-3 flex items-center gap-2 text-sm">
-        <span>⏳</span> Conta Decrescente
+        <span>⏳</span> Contagem Decrescente
       </h3>
       <div className="flex justify-around">
         <Cell value={timeLeft.days} label="dias" />
