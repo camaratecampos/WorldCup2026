@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { useLang } from '../context/LanguageContext';
 import { showToast } from './ui/Toast';
 
 export function Auth() {
   const { login, register } = useAuth();
+  const { t } = useLang();
   const [tab, setTab] = useState<'login' | 'register'>('login');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -13,16 +15,16 @@ export function Auth() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!username || !password) {
-      showToast('Preenche todos os campos', 'error');
+      showToast(t('toast.fillFields'), 'error');
       return;
     }
     if (tab === 'register') {
       if (password.length < 6) {
-        showToast('Password deve ter pelo menos 6 caracteres', 'error');
+        showToast(t('toast.passwordMin'), 'error');
         return;
       }
       if (password !== confirmPassword) {
-        showToast('Passwords não coincidem', 'error');
+        showToast(t('toast.passwordMismatch'), 'error');
         return;
       }
     }
@@ -30,13 +32,13 @@ export function Auth() {
     try {
       if (tab === 'login') {
         await login(username, password);
-        showToast('Bem-vindo!', 'success');
+        showToast(t('toast.welcome'), 'success');
       } else {
         await register(username, password);
-        showToast('Conta criada com sucesso!', 'success');
+        showToast(t('toast.registered'), 'success');
       }
     } catch (err: unknown) {
-      showToast(err instanceof Error ? err.message : 'Erro ao autenticar', 'error');
+      showToast(err instanceof Error ? err.message : t('toast.authError'), 'error');
     } finally {
       setLoading(false);
     }
@@ -60,7 +62,7 @@ export function Auth() {
           <h1 className="text-4xl font-black leading-none tracking-tight">
             <span className="text-hikma">hikma</span><span className="text-hikma">.</span>
           </h1>
-          <p className="text-white/50 text-sm mt-2 font-medium">Copa do Mundo 2026 • Apostas</p>
+          <p className="text-white/50 text-sm mt-2 font-medium">{t('auth.title')}</p>
         </div>
 
         {/* Glass card */}
@@ -70,50 +72,46 @@ export function Auth() {
             <button
               onClick={() => setTab('login')}
               className={`flex-1 py-2.5 rounded-lg text-sm font-bold transition-all ${
-                tab === 'login'
-                  ? 'bg-gold text-primary-dark shadow-lg'
-                  : 'text-white/50 hover:text-white'
+                tab === 'login' ? 'bg-gold text-primary-dark shadow-lg' : 'text-white/50 hover:text-white'
               }`}
             >
-              Entrar
+              {t('auth.login')}
             </button>
             <button
               onClick={() => setTab('register')}
               className={`flex-1 py-2.5 rounded-lg text-sm font-bold transition-all ${
-                tab === 'register'
-                  ? 'bg-gold text-primary-dark shadow-lg'
-                  : 'text-white/50 hover:text-white'
+                tab === 'register' ? 'bg-gold text-primary-dark shadow-lg' : 'text-white/50 hover:text-white'
               }`}
             >
-              Registar
+              {t('auth.register')}
             </button>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block text-white/50 text-[10px] mb-1.5 font-bold uppercase tracking-widest">
-                Utilizador
+                {t('auth.username')}
               </label>
               <input
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/25 focus:outline-none focus:border-gold/60 focus:bg-white/15 transition-all text-sm font-medium"
-                placeholder="O teu nome"
+                placeholder={t('auth.usernamePlaceholder')}
                 autoComplete="username"
               />
             </div>
 
             <div>
               <label className="block text-white/50 text-[10px] mb-1.5 font-bold uppercase tracking-widest">
-                Password
+                {t('auth.password')}
               </label>
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/25 focus:outline-none focus:border-gold/60 focus:bg-white/15 transition-all text-sm font-medium"
-                placeholder="••••••"
+                placeholder={t('auth.passwordPlaceholder')}
                 autoComplete={tab === 'login' ? 'current-password' : 'new-password'}
               />
             </div>
@@ -121,14 +119,14 @@ export function Auth() {
             {tab === 'register' && (
               <div>
                 <label className="block text-white/50 text-[10px] mb-1.5 font-bold uppercase tracking-widest">
-                  Confirmar Password
+                  {t('auth.confirmPassword')}
                 </label>
                 <input
                   type="password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/25 focus:outline-none focus:border-gold/60 focus:bg-white/15 transition-all text-sm font-medium"
-                  placeholder="••••••"
+                  placeholder={t('auth.passwordPlaceholder')}
                   autoComplete="new-password"
                 />
               </div>
@@ -139,14 +137,12 @@ export function Auth() {
               disabled={loading}
               className="w-full bg-gold text-primary-dark font-black py-3.5 rounded-xl hover:bg-gold-light transition-all disabled:opacity-50 text-sm shadow-lg shadow-gold/20 mt-2"
             >
-              {loading ? 'Aguarda...' : tab === 'login' ? 'Entrar' : 'Criar Conta'}
+              {loading ? t('auth.submitting') : tab === 'login' ? t('auth.loginButton') : t('auth.registerButton')}
             </button>
           </form>
         </div>
 
-        <p className="text-white/25 text-xs text-center mt-6 font-medium">
-          Grupo Hikma • Copa do Mundo 2026
-        </p>
+        <p className="text-white/25 text-xs text-center mt-6 font-medium">{t('auth.footer')}</p>
       </div>
     </div>
   );

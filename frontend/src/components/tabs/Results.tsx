@@ -3,6 +3,7 @@ import api from '../../api';
 import { GameWithBet, TeamStats } from '../../types';
 import { Flag } from '../ui/Flag';
 import { LoadingSpinner } from '../ui/LoadingSpinner';
+import { useLang } from '../../context/LanguageContext';
 
 type SubTab = 'games' | 'groups' | 'third';
 
@@ -17,6 +18,7 @@ function getTrend(home: number, away: number): 'H' | 'D' | 'A' {
 }
 
 function ResultCard({ game }: { game: GameWithBet }) {
+  const { t } = useLang();
   const hasResult = game.home_score != null && game.away_score != null;
   const hasBet = game.bet_home != null && game.bet_away != null;
   const points = game.points;
@@ -45,23 +47,23 @@ function ResultCard({ game }: { game: GameWithBet }) {
     }
   } else if (hasResult && !hasBet) {
     cardBg = 'bg-white/5 border-white/5';
-    pointsDisplay = <span className="text-white/40 text-xs">sem aposta</span>;
+    pointsDisplay = <span className="text-white/40 text-xs">{t('results.noBet')}</span>;
   }
 
-  const phaseLabel: Record<string, string> = {
-    group: `Grupo ${game.group_name}`,
-    r32: 'R32',
-    r16: 'Oitavos',
-    qf: 'Quartos',
-    sf: 'Meias',
-    '3rd': '3º/4º',
-    final: 'Final',
-  };
+  const phaseLabel = (() => {
+    if (game.phase === 'group') return t('results.phase.group', { name: game.group_name || '' });
+    const map: Record<string, string> = {
+      r32: t('results.phase.r32'), r16: t('results.phase.r16'),
+      qf: t('results.phase.qf'), sf: t('results.phase.sf'),
+      '3rd': t('results.phase.3rd'), final: t('results.phase.final'),
+    };
+    return map[game.phase] || game.phase;
+  })();
 
   return (
     <div className={`rounded-2xl p-4 border ${cardBg}`}>
       <div className="flex items-center justify-between mb-2">
-        <span className="text-xs text-white/50">{phaseLabel[game.phase] || game.phase} • {formatDate(game.match_date)}</span>
+        <span className="text-xs text-white/50">{phaseLabel} • {formatDate(game.match_date)}</span>
         {pointsDisplay}
       </div>
       <div className="flex items-center justify-between">
@@ -75,7 +77,7 @@ function ResultCard({ game }: { game: GameWithBet }) {
           </div>
           {hasBet && (
             <div className="text-white/50 text-xs">
-              aposta: {game.bet_home} - {game.bet_away}
+              {t('results.bet')} {game.bet_home} - {game.bet_away}
             </div>
           )}
         </div>
@@ -89,38 +91,30 @@ function ResultCard({ game }: { game: GameWithBet }) {
 }
 
 function GroupTable({ group, teams }: { group: string; teams: TeamStats[] }) {
+  const { t } = useLang();
   return (
     <div className="bg-white/10 rounded-2xl overflow-hidden border border-white/10">
       <div className="bg-primary-light px-4 py-2">
-        <span className="text-gold font-bold text-sm">Grupo {group}</span>
+        <span className="text-gold font-bold text-sm">{t('results.phase.group', { name: group })}</span>
       </div>
       <div className="overflow-x-auto">
         <table className="w-full text-xs">
           <thead>
             <tr className="border-b border-white/10">
-              <th className="text-left px-3 py-2 text-white/50 font-medium">Equipa</th>
-              <th className="text-center px-2 py-2 text-white/50 font-medium">J</th>
-              <th className="text-center px-2 py-2 text-white/50 font-medium">V</th>
-              <th className="text-center px-2 py-2 text-white/50 font-medium">E</th>
-              <th className="text-center px-2 py-2 text-white/50 font-medium">D</th>
-              <th className="text-center px-2 py-2 text-white/50 font-medium">GM</th>
-              <th className="text-center px-2 py-2 text-white/50 font-medium">GS</th>
-              <th className="text-center px-2 py-2 text-white/50 font-medium">DG</th>
-              <th className="text-center px-2 py-2 text-white/50 font-medium">Pt</th>
+              <th className="text-left px-3 py-2 text-white/50 font-medium">{t('results.col.team')}</th>
+              <th className="text-center px-2 py-2 text-white/50 font-medium">{t('results.col.p')}</th>
+              <th className="text-center px-2 py-2 text-white/50 font-medium">{t('results.col.w')}</th>
+              <th className="text-center px-2 py-2 text-white/50 font-medium">{t('results.col.d')}</th>
+              <th className="text-center px-2 py-2 text-white/50 font-medium">{t('results.col.l')}</th>
+              <th className="text-center px-2 py-2 text-white/50 font-medium">{t('results.col.gf')}</th>
+              <th className="text-center px-2 py-2 text-white/50 font-medium">{t('results.col.ga')}</th>
+              <th className="text-center px-2 py-2 text-white/50 font-medium">{t('results.col.gd')}</th>
+              <th className="text-center px-2 py-2 text-white/50 font-medium">{t('results.col.pts')}</th>
             </tr>
           </thead>
           <tbody>
             {teams.map((team, idx) => (
-              <tr
-                key={team.team}
-                className={`border-b border-white/5 ${
-                  idx < 2
-                    ? 'bg-green-900/20'
-                    : idx === 2
-                    ? 'bg-yellow-900/10'
-                    : ''
-                }`}
-              >
+              <tr key={team.team} className={`border-b border-white/5 ${idx < 2 ? 'bg-green-900/20' : idx === 2 ? 'bg-yellow-900/10' : ''}`}>
                 <td className="px-3 py-2 text-white font-medium flex items-center gap-1.5">
                   <Flag team={team.team} size="sm" />
                   <span className="truncate max-w-[80px]">{team.team}</span>
@@ -143,30 +137,28 @@ function GroupTable({ group, teams }: { group: string; teams: TeamStats[] }) {
 }
 
 function ThirdPlaceTable({ teams }: { teams: (TeamStats & { group: string })[] }) {
+  const { t } = useLang();
   return (
     <div className="bg-white/10 rounded-2xl overflow-hidden border border-white/10">
       <div className="bg-primary-light px-4 py-2">
-        <span className="text-gold font-bold text-sm">3os Classificados</span>
+        <span className="text-gold font-bold text-sm">{t('results.third.title')}</span>
       </div>
       <div className="overflow-x-auto">
         <table className="w-full text-xs">
           <thead>
             <tr className="border-b border-white/10">
               <th className="text-center px-2 py-2 text-white/50">#</th>
-              <th className="text-left px-3 py-2 text-white/50 font-medium">Equipa</th>
-              <th className="text-center px-2 py-2 text-white/50 font-medium">Gr.</th>
-              <th className="text-center px-2 py-2 text-white/50 font-medium">J</th>
-              <th className="text-center px-2 py-2 text-white/50 font-medium">DG</th>
-              <th className="text-center px-2 py-2 text-white/50 font-medium">GM</th>
-              <th className="text-center px-2 py-2 text-white/50 font-medium">Pt</th>
+              <th className="text-left px-3 py-2 text-white/50 font-medium">{t('results.col.team')}</th>
+              <th className="text-center px-2 py-2 text-white/50 font-medium">{t('results.col.grp')}</th>
+              <th className="text-center px-2 py-2 text-white/50 font-medium">{t('results.col.p')}</th>
+              <th className="text-center px-2 py-2 text-white/50 font-medium">{t('results.col.gd')}</th>
+              <th className="text-center px-2 py-2 text-white/50 font-medium">{t('results.col.gf')}</th>
+              <th className="text-center px-2 py-2 text-white/50 font-medium">{t('results.col.pts')}</th>
             </tr>
           </thead>
           <tbody>
             {teams.map((team, idx) => (
-              <tr
-                key={`${team.group}-${team.team}`}
-                className={`border-b border-white/5 ${idx < 8 ? 'bg-green-900/20' : ''}`}
-              >
+              <tr key={`${team.group}-${team.team}`} className={`border-b border-white/5 ${idx < 8 ? 'bg-green-900/20' : ''}`}>
                 <td className="text-center px-2 py-2 text-white/50">{idx + 1}</td>
                 <td className="px-3 py-2 text-white font-medium flex items-center gap-1.5">
                   <Flag team={team.team} size="sm" />
@@ -184,100 +176,73 @@ function ThirdPlaceTable({ teams }: { teams: (TeamStats & { group: string })[] }
       </div>
       <div className="px-4 py-2 text-xs text-white/40 flex items-center gap-2">
         <span className="w-3 h-3 rounded bg-green-900/40 inline-block"></span>
-        <span>Top 8 avançam para os Dezasseis avos</span>
+        <span>{t('results.third.advance')}</span>
       </div>
     </div>
   );
 }
 
 export function Results() {
+  const { t } = useLang();
   const [subTab, setSubTab] = useState<SubTab>('games');
   const [results, setResults] = useState<GameWithBet[]>([]);
   const [groups, setGroups] = useState<Record<string, TeamStats[]>>({});
   const [thirdPlace, setThirdPlace] = useState<(TeamStats & { group: string })[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    loadData();
-  }, []);
+  useEffect(() => { loadData(); }, []);
 
   async function loadData() {
     setLoading(true);
     try {
-      const [r, g, t] = await Promise.all([
-        api.getResults(),
-        api.getGroups(),
-        api.getThirdPlace(),
-      ]);
-      setResults(r);
-      setGroups(g);
-      setThirdPlace(t);
-    } catch (err) {
-      // ignore
-    } finally {
-      setLoading(false);
-    }
+      const [r, g, th] = await Promise.all([api.getResults(), api.getGroups(), api.getThirdPlace()]);
+      setResults(r); setGroups(g); setThirdPlace(th);
+    } catch { /* ignore */ } finally { setLoading(false); }
   }
+
+  const subTabs: { id: SubTab; label: string }[] = [
+    { id: 'games', label: t('results.tab.games') },
+    { id: 'groups', label: t('results.tab.groups') },
+    { id: 'third', label: t('results.tab.third') },
+  ];
 
   return (
     <div className="space-y-4 pb-4">
-      {/* Sub-tabs */}
       <div className="flex rounded-xl bg-black/20 p-1">
-        {(['games', 'groups', 'third'] as SubTab[]).map((t) => {
-          const labels = { games: 'Jogos', groups: 'Grupos', third: '3os Lugares' };
-          return (
-            <button
-              key={t}
-              onClick={() => setSubTab(t)}
-              className={`flex-1 py-2 rounded-lg text-xs font-semibold transition-all ${
-                subTab === t ? 'bg-gold text-primary-dark' : 'text-white/70 hover:text-white'
-              }`}
-            >
-              {labels[t]}
-            </button>
-          );
-        })}
+        {subTabs.map((tab) => (
+          <button key={tab.id} onClick={() => setSubTab(tab.id)}
+            className={`flex-1 py-2 rounded-lg text-xs font-semibold transition-all ${subTab === tab.id ? 'bg-gold text-primary-dark' : 'text-white/70 hover:text-white'}`}>
+            {tab.label}
+          </button>
+        ))}
       </div>
 
       {loading ? (
-        <div className="flex items-center justify-center h-48">
-          <LoadingSpinner size="lg" />
-        </div>
+        <div className="flex items-center justify-center h-48"><LoadingSpinner size="lg" /></div>
       ) : (
         <>
           {subTab === 'games' && (
             <div className="space-y-3">
               {results.length === 0 ? (
-                <div className="text-center text-white/50 py-12">
-                  <div className="text-4xl mb-3">⚽</div>
-                  <p>Ainda não há resultados</p>
-                </div>
-              ) : (
-                results.map((game) => <ResultCard key={game.id} game={game} />)
-              )}
+                <div className="text-center text-white/50 py-12"><div className="text-4xl mb-3">⚽</div><p>{t('results.noResults')}</p></div>
+              ) : results.map((game) => <ResultCard key={game.id} game={game} />)}
             </div>
           )}
 
           {subTab === 'groups' && (
             <div className="space-y-4">
-              {Object.entries(groups)
-                .sort(([a], [b]) => a.localeCompare(b))
-                .map(([grp, teams]) => (
-                  <GroupTable key={grp} group={grp} teams={teams} />
-                ))}
+              {Object.entries(groups).sort(([a], [b]) => a.localeCompare(b)).map(([grp, teams]) => (
+                <GroupTable key={grp} group={grp} teams={teams} />
+              ))}
               {Object.keys(groups).length === 0 && (
-                <div className="text-center text-white/50 py-12">
-                  <p>Aguarda os resultados da fase de grupos</p>
-                </div>
+                <div className="text-center text-white/50 py-12"><p>{t('results.awaitGroups')}</p></div>
               )}
               <div className="flex gap-4 text-xs text-white/50 px-2">
                 <div className="flex items-center gap-1.5">
-                  <span className="w-3 h-3 rounded bg-green-900/40 inline-block"></span>
-                  Classificam directamente
+                  <span className="w-3 h-3 rounded bg-green-900/40 inline-block"></span>{t('results.legend.qualify')}
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <span className="w-3 h-3 rounded bg-yellow-900/30 inline-block"></span>
-                  Possível 3o lugar
+                  <span className="w-3 h-3 rounded bg-yellow-900/30 inline-block"></span>{t('results.legend.possible')}
                 </div>
               </div>
             </div>
@@ -287,9 +252,7 @@ export function Results() {
             <div className="space-y-4">
               <ThirdPlaceTable teams={thirdPlace} />
               {thirdPlace.length === 0 && (
-                <div className="text-center text-white/50 py-12">
-                  <p>Aguarda os resultados dos grupos</p>
-                </div>
+                <div className="text-center text-white/50 py-12"><p>{t('results.awaitThird')}</p></div>
               )}
             </div>
           )}

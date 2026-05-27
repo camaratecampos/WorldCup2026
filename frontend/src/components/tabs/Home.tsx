@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
+import { useLang } from '../../context/LanguageContext';
 import api from '../../api';
 import { Game, StandingEntry } from '../../types';
 import { allTeams } from '../../utils/flags';
@@ -18,6 +19,7 @@ function formatDate(dateStr: string): string {
 }
 
 function Countdown() {
+  const { t } = useLang();
   const [timeLeft, setTimeLeft] = useState<{ days: number; hours: number; minutes: number; seconds: number } | null>(null);
 
   useEffect(() => {
@@ -50,24 +52,24 @@ function Countdown() {
   return (
     <div className="bg-white/10 rounded-2xl p-4 border border-white/10">
       <h3 className="font-bold text-white mb-3 flex items-center gap-2 text-sm">
-        <span>⏳</span> Contagem Decrescente
+        <span>⏳</span> {t('home.countdown.title')}
       </h3>
       <div className="flex justify-around">
-        <Cell value={timeLeft.days} label="dias" />
-        <Cell value={timeLeft.hours} label="horas" />
-        <Cell value={timeLeft.minutes} label="min" />
-        <Cell value={timeLeft.seconds} label="seg" />
+        <Cell value={timeLeft.days} label={t('home.countdown.days')} />
+        <Cell value={timeLeft.hours} label={t('home.countdown.hours')} />
+        <Cell value={timeLeft.minutes} label={t('home.countdown.minutes')} />
+        <Cell value={timeLeft.seconds} label={t('home.countdown.seconds')} />
       </div>
-      <p className="text-center text-white/40 text-xs mt-3">até ao início • 11 jun 20:00h</p>
+      <p className="text-center text-white/40 text-xs mt-3">{t('home.countdown.until')}</p>
     </div>
   );
 }
 
 export function Home() {
   const { user, refreshUser } = useAuth();
+  const { t } = useLang();
   const [standings, setStandings] = useState<StandingEntry[]>([]);
   const [upcomingGames, setUpcomingGames] = useState<Game[]>([]);
-  const [myBets, setMyBets] = useState<Set<number>>(new Set());
   const [loading, setLoading] = useState(true);
   const [teamPickOpen, setTeamPickOpen] = useState(false);
   const [selectedTeam, setSelectedTeam] = useState('');
@@ -93,15 +95,13 @@ export function Home() {
       ]);
       setStandings(standingsData);
       const betGameIds = new Set(betsData.map((b) => b.game_id));
-      setMyBets(betGameIds);
 
-      // Upcoming games without bets, in next 7 days
       const in7days = new Date(now.getTime() + 7 * 24 * 3600 * 1000);
       const upcoming = gamesData
         .filter((g) => new Date(g.match_date) > now && new Date(g.match_date) < in7days && g.status === 'scheduled' && !betGameIds.has(g.id))
         .slice(0, 3);
       setUpcomingGames(upcoming);
-    } catch (err) {
+    } catch {
       // ignore
     } finally {
       setLoading(false);
@@ -116,9 +116,9 @@ export function Home() {
       localStorage.setItem('token', result.token);
       await refreshUser();
       setEditingName(false);
-      showToast('Nome alterado!', 'success');
+      showToast(t('toast.nameSaved'), 'success');
     } catch (err: unknown) {
-      showToast(err instanceof Error ? err.message : 'Erro ao alterar nome', 'error');
+      showToast(err instanceof Error ? err.message : t('toast.nameError'), 'error');
     } finally {
       setSavingName(false);
     }
@@ -126,7 +126,7 @@ export function Home() {
 
   async function handleTeamPick() {
     if (!selectedTeam) {
-      showToast('Seleciona uma equipa', 'error');
+      showToast(t('toast.chooseTeam'), 'error');
       return;
     }
     setSavingTeamPick(true);
@@ -134,9 +134,9 @@ export function Home() {
       await api.setTeamPick(selectedTeam);
       await refreshUser();
       setTeamPickOpen(false);
-      showToast(`Escolheste ${selectedTeam}!`, 'success');
+      showToast(t('toast.teamPicked', { team: selectedTeam }), 'success');
     } catch (err: unknown) {
-      showToast(err instanceof Error ? err.message : 'Erro ao escolher equipa', 'error');
+      showToast(err instanceof Error ? err.message : t('toast.teamError'), 'error');
     } finally {
       setSavingTeamPick(false);
     }
@@ -157,10 +157,7 @@ export function Home() {
     <div className="space-y-4 pb-4">
       {/* Hero photo */}
       <div className="relative h-44 rounded-2xl overflow-hidden">
-        <div
-          className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: "url('/hikma-lab.png')" }}
-        />
+        <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: "url('/hikma-lab.png')" }} />
         <div className="absolute inset-0 bg-gradient-to-t from-primary-dark via-primary-dark/40 to-transparent" />
         <div className="absolute inset-0 bg-gradient-to-r from-primary-dark/50 to-transparent" />
         <div className="absolute bottom-4 left-4">
@@ -173,7 +170,7 @@ export function Home() {
       <div className="bg-gradient-to-br from-primary-light to-primary rounded-2xl p-5 text-white border border-white/10">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-white/70 text-sm">Olá,</p>
+            <p className="text-white/70 text-sm">{t('home.hello')}</p>
             {editingName ? (
               <div className="flex items-center gap-2 mt-1">
                 <input
@@ -185,11 +182,7 @@ export function Home() {
                   placeholder={user?.username}
                   autoFocus
                 />
-                <button
-                  onClick={handleRename}
-                  disabled={savingName}
-                  className="text-gold text-xs font-black disabled:opacity-50"
-                >
+                <button onClick={handleRename} disabled={savingName} className="text-gold text-xs font-black disabled:opacity-50">
                   {savingName ? '...' : 'OK'}
                 </button>
                 <button onClick={() => setEditingName(false)} className="text-white/40 text-xs">✕</button>
@@ -200,7 +193,7 @@ export function Home() {
                 <button
                   onClick={() => { setNewName(''); setEditingName(true); }}
                   className="text-white/30 hover:text-white/60 transition-colors text-sm"
-                  title="Alterar nome"
+                  title={t('home.editName')}
                 >
                   ✏️
                 </button>
@@ -209,7 +202,7 @@ export function Home() {
           </div>
           <div className="text-right">
             <div className="text-3xl font-bold text-gold">{myRank?.totalPoints ?? 0}</div>
-            <div className="text-xs text-white/70">pontos</div>
+            <div className="text-xs text-white/70">{t('home.points')}</div>
           </div>
         </div>
         {myRank && (
@@ -217,7 +210,7 @@ export function Home() {
             <span className="bg-gold text-primary-dark text-xs font-bold px-2 py-0.5 rounded-full">
               #{myRank.rank}
             </span>
-            <span className="text-xs text-white/70">no ranking</span>
+            <span className="text-xs text-white/70">{t('home.ranking')}</span>
           </div>
         )}
       </div>
@@ -228,7 +221,7 @@ export function Home() {
       {/* Team pick */}
       <div className="bg-white/10 rounded-2xl p-4 border border-white/10">
         <h3 className="font-bold text-white mb-3 flex items-center gap-2">
-          <span>🏆</span> A Minha Equipa
+          <span>🏆</span> {t('home.teamPick.title')}
         </h3>
         {canPickTeam ? (
           !teamPickOpen ? (
@@ -238,14 +231,14 @@ export function Home() {
                   <Flag team={user.teamPick} size="lg" />
                   <div>
                     <div className="font-semibold text-white">{user.teamPick}</div>
-                    <div className="text-xs text-white/50">Podes alterar até ao início</div>
+                    <div className="text-xs text-white/50">{t('home.teamPick.canChange')}</div>
                   </div>
                 </div>
                 <button
                   onClick={() => { setSelectedTeam(user.teamPick!); setTeamPickOpen(true); }}
                   className="bg-white/10 text-white/70 text-xs font-semibold px-3 py-1.5 rounded-xl hover:bg-white/20 transition-colors"
                 >
-                  Alterar
+                  {t('home.teamPick.change')}
                 </button>
               </div>
             ) : (
@@ -253,7 +246,7 @@ export function Home() {
                 onClick={() => setTeamPickOpen(true)}
                 className="bg-gold text-primary-dark font-bold px-4 py-2 rounded-xl text-sm hover:bg-gold-light transition-colors"
               >
-                Escolher equipa vencedora
+                {t('home.teamPick.choose')}
               </button>
             )
           ) : (
@@ -263,24 +256,19 @@ export function Home() {
                 onChange={(e) => setSelectedTeam(e.target.value)}
                 className="w-full bg-primary border border-white/20 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-gold"
               >
-                <option value="">-- Escolhe uma equipa --</option>
-                {allTeams.map((t) => (
-                  <option key={t} value={t}>{t}</option>
+                <option value="">{t('home.teamPick.placeholder')}</option>
+                {allTeams.map((tm) => (
+                  <option key={tm} value={tm}>{tm}</option>
                 ))}
               </select>
               <div className="flex gap-2">
-                <button
-                  onClick={handleTeamPick}
-                  disabled={savingTeamPick}
-                  className="bg-gold text-primary-dark font-bold px-4 py-2 rounded-xl text-sm disabled:opacity-50"
-                >
-                  {savingTeamPick ? 'A guardar...' : 'Confirmar'}
+                <button onClick={handleTeamPick} disabled={savingTeamPick}
+                  className="bg-gold text-primary-dark font-bold px-4 py-2 rounded-xl text-sm disabled:opacity-50">
+                  {savingTeamPick ? t('home.teamPick.saving') : t('home.teamPick.confirm')}
                 </button>
-                <button
-                  onClick={() => setTeamPickOpen(false)}
-                  className="bg-white/10 text-white px-4 py-2 rounded-xl text-sm"
-                >
-                  Cancelar
+                <button onClick={() => setTeamPickOpen(false)}
+                  className="bg-white/10 text-white px-4 py-2 rounded-xl text-sm">
+                  {t('home.teamPick.cancel')}
                 </button>
               </div>
             </div>
@@ -291,11 +279,11 @@ export function Home() {
               <Flag team={user.teamPick} size="lg" />
               <div>
                 <div className="font-semibold text-white">{user.teamPick}</div>
-                <div className="text-xs text-white/50">Escolha bloqueada</div>
+                <div className="text-xs text-white/50">{t('home.teamPick.locked')}</div>
               </div>
             </div>
           ) : (
-            <p className="text-white/60 text-sm">O torneio já começou. Escolha bloqueada.</p>
+            <p className="text-white/60 text-sm">{t('home.teamPick.started')}</p>
           )
         )}
       </div>
@@ -304,7 +292,7 @@ export function Home() {
       {upcomingGames.length > 0 && (
         <div className="bg-white/10 rounded-2xl p-4 border border-white/10">
           <h3 className="font-bold text-white mb-3 flex items-center gap-2">
-            <span>⏰</span> Próximas Apostas
+            <span>⏰</span> {t('home.upcoming.title')}
           </h3>
           <div className="space-y-2">
             {upcomingGames.map((game) => (
@@ -327,28 +315,18 @@ export function Home() {
       {/* Mini Leaderboard */}
       <div className="bg-white/10 rounded-2xl p-4 border border-white/10">
         <h3 className="font-bold text-white mb-3 flex items-center gap-2">
-          <span>🥇</span> Classificação
+          <span>🥇</span> {t('home.standings.title')}
         </h3>
         <div className="space-y-2">
           {top5.map((entry) => (
-            <div
-              key={entry.userId}
-              className={`flex items-center justify-between py-2 px-3 rounded-xl ${
-                entry.username === user?.username ? 'bg-gold/20 border border-gold/40' : 'bg-black/20'
-              }`}
-            >
+            <div key={entry.userId}
+              className={`flex items-center justify-between py-2 px-3 rounded-xl ${entry.username === user?.username ? 'bg-gold/20 border border-gold/40' : 'bg-black/20'}`}>
               <div className="flex items-center gap-3">
-                <span
-                  className={`text-sm font-bold w-5 text-center ${
-                    entry.rank === 1 ? 'text-gold' : entry.rank === 2 ? 'text-gray-300' : entry.rank === 3 ? 'text-amber-600' : 'text-white/60'
-                  }`}
-                >
+                <span className={`text-sm font-bold w-5 text-center ${entry.rank === 1 ? 'text-gold' : entry.rank === 2 ? 'text-gray-300' : entry.rank === 3 ? 'text-amber-600' : 'text-white/60'}`}>
                   {entry.rank}
                 </span>
                 <span className="text-white text-sm font-medium">{entry.username}</span>
-                {entry.teamPick && (
-                  <Flag team={entry.teamPick} size="sm" />
-                )}
+                {entry.teamPick && <Flag team={entry.teamPick} size="sm" />}
               </div>
               <span className="text-gold font-bold text-sm">{entry.totalPoints}pt</span>
             </div>

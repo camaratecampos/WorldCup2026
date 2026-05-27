@@ -4,9 +4,11 @@ import { StandingEntry } from '../../types';
 import { Flag } from '../ui/Flag';
 import { LoadingSpinner } from '../ui/LoadingSpinner';
 import { useAuth } from '../../context/AuthContext';
+import { useLang } from '../../context/LanguageContext';
 
 export function Standings() {
   const { user } = useAuth();
+  const { t } = useLang();
   const [standings, setStandings] = useState<StandingEntry[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -29,7 +31,7 @@ export function Standings() {
       <div className="bg-white/10 rounded-2xl overflow-hidden border border-white/10">
         <div className="bg-primary-light px-4 py-3 flex items-center gap-2">
           <span className="text-2xl">🏆</span>
-          <h2 className="text-gold font-bold">Classificação Geral</h2>
+          <h2 className="text-gold font-bold">{t('standings.title')}</h2>
         </div>
 
         <div className="divide-y divide-white/5">
@@ -60,10 +62,10 @@ export function Standings() {
                     <span className={`font-semibold truncate ${isMe ? 'text-gold' : 'text-white'}`}>
                       {entry.username}
                     </span>
-                    {isMe && <span className="text-xs text-gold/70">(tu)</span>}
+                    {isMe && <span className="text-xs text-gold/70">{t('standings.me')}</span>}
                   </div>
                   <div className="flex items-center gap-2 mt-0.5">
-                    <span className="text-xs text-white/40">{entry.gamesBet} apostas</span>
+                    <span className="text-xs text-white/40">{entry.gamesBet} {t('standings.bets')}</span>
                     {entry.teamPick && (
                       <span className="text-xs text-white/50 flex items-center gap-1">
                         <Flag team={entry.teamPick} size="sm" />
@@ -72,7 +74,7 @@ export function Standings() {
                     )}
                     {entry.teamPickBonus > 0 && (
                       <span className="text-xs text-gold/70 font-semibold">
-                        +{entry.teamPickBonus}pt equipa
+                        +{entry.teamPickBonus}{t('standings.teamBonus')}
                       </span>
                     )}
                   </div>
@@ -83,7 +85,7 @@ export function Standings() {
                   <div className={`text-lg font-bold ${isMe ? 'text-gold' : 'text-white'}`}>
                     {entry.totalPoints}
                   </div>
-                  <div className="text-xs text-white/40">pontos</div>
+                  <div className="text-xs text-white/40">{t('standings.points')}</div>
                 </div>
               </div>
             );
@@ -93,15 +95,15 @@ export function Standings() {
         {standings.length === 0 && (
           <div className="text-center text-white/50 py-12">
             <div className="text-4xl mb-3">⚽</div>
-            <p>Sem participantes ainda</p>
+            <p>{t('standings.empty')}</p>
           </div>
         )}
       </div>
 
       {/* Legend */}
       <div className="bg-white/5 rounded-2xl p-4 text-xs text-white/50 space-y-1">
-        <p><span className="text-white/70 font-semibold">Pontos</span> = apostas + bónus equipa</p>
-        <p><span className="text-white/70 font-semibold">Apostas</span> = número de jogos apostados</p>
+        <p><span className="text-white/70 font-semibold">{t('standings.legend.points')}</span></p>
+        <p><span className="text-white/70 font-semibold">{t('standings.legend.bets')}</span></p>
       </div>
     </div>
   );

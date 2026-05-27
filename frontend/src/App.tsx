@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from './context/AuthContext';
+import { useLang } from './context/LanguageContext';
 import { Auth } from './components/Auth';
 import { Home } from './components/tabs/Home';
 import { Rules } from './components/tabs/Rules';
@@ -11,17 +12,18 @@ import { ToastContainer } from './components/ui/Toast';
 
 type Tab = 'home' | 'rules' | 'bets' | 'results' | 'standings';
 
-const tabs: { id: Tab; label: string; icon: string }[] = [
-  { id: 'home', label: 'Início', icon: '🏠' },
-  { id: 'rules', label: 'Regras', icon: '📋' },
-  { id: 'bets', label: 'Apostas', icon: '⚽' },
-  { id: 'results', label: 'Resultados', icon: '📊' },
-  { id: 'standings', label: 'Ranking', icon: '🏆' },
-];
-
 function App() {
   const { user, loading, logout } = useAuth();
+  const { t, lang, setLang } = useLang();
   const [activeTab, setActiveTab] = useState<Tab>('home');
+
+  const tabs: { id: Tab; label: string; icon: string }[] = [
+    { id: 'home', label: t('tabs.home'), icon: '🏠' },
+    { id: 'rules', label: t('tabs.rules'), icon: '📋' },
+    { id: 'bets', label: t('tabs.bets'), icon: '⚽' },
+    { id: 'results', label: t('tabs.results'), icon: '📊' },
+    { id: 'standings', label: t('tabs.standings'), icon: '🏆' },
+  ];
 
   if (loading) {
     return (
@@ -29,7 +31,7 @@ function App() {
         <div className="text-center space-y-4">
           <div className="text-5xl">⚽</div>
           <LoadingSpinner size="lg" />
-          <p className="text-white/30 text-xs font-medium tracking-widest uppercase">A carregar</p>
+          <p className="text-white/30 text-xs font-medium tracking-widest uppercase">{t('app.loading')}</p>
         </div>
       </div>
     );
@@ -54,16 +56,24 @@ function App() {
           <span className="text-xl">⚽</span>
           <div className="flex items-baseline gap-1.5">
             <span className="font-black text-lg leading-none text-hikma">hikma.</span>
-            <span className="text-white/35 text-xs font-medium">Copa 2026</span>
+            <span className="text-white/35 text-xs font-medium">{t('app.subtitle')}</span>
           </div>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5">
+          {/* Language toggle */}
+          <button
+            onClick={() => setLang(lang === 'pt' ? 'en' : 'pt')}
+            className="text-white/40 text-xs font-bold hover:text-white/70 transition-colors px-2 py-1 rounded-lg hover:bg-white/10 tracking-wide"
+          >
+            {lang === 'pt' ? 'EN' : 'PT'}
+          </button>
+          <span className="text-white/20 text-xs">|</span>
           <span className="text-white/55 text-sm font-medium">{user.username}</span>
           <button
             onClick={logout}
             className="text-white/35 text-xs hover:text-white/70 transition-colors px-2 py-1 rounded-lg hover:bg-white/10"
           >
-            Sair
+            {t('app.logout')}
           </button>
         </div>
       </header>
