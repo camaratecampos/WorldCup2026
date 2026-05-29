@@ -162,7 +162,7 @@ export function Home() {
         <div className="absolute inset-0 bg-gradient-to-r from-primary-dark/50 to-transparent" />
         <div className="absolute bottom-4 left-4">
           <div className="text-[10px] font-black text-hikma uppercase tracking-widest mb-1">Copa Hikma 2026</div>
-          <p className="text-white/55 text-xs font-medium">May the best bettor win</p>
+          <p className="text-white/55 text-xs font-medium">May the best predictor win</p>
         </div>
       </div>
 

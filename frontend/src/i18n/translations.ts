@@ -7,12 +7,12 @@ const pt = {
   'app.loading': 'A carregar',
   'tabs.home': 'Início',
   'tabs.rules': 'Regras',
-  'tabs.bets': 'Apostas',
+  'tabs.bets': 'Previsões',
   'tabs.results': 'Resultados',
   'tabs.standings': 'Ranking',
 
   // Auth
-  'auth.title': 'Copa do Mundo 2026 • Apostas',
+  'auth.title': 'Copa do Mundo 2026 • Previsões',
   'auth.footer': 'Grupo Hikma • Copa do Mundo 2026',
   'auth.login': 'Entrar',
   'auth.register': 'Registar',
@@ -24,6 +24,18 @@ const pt = {
   'auth.submitting': 'Aguarda...',
   'auth.loginButton': 'Entrar',
   'auth.registerButton': 'Criar Conta',
+
+  // Phone gate
+  'phone.title': 'Número de Telemóvel',
+  'phone.desc': 'Para participar precisa de registar o teu número de telemóvel.',
+  'phone.label': 'Telemóvel',
+  'phone.placeholder': '+351 912 345 678',
+  'phone.confirm': 'Guardar',
+  'phone.saving': 'A guardar...',
+
+  // Auth phone field
+  'auth.phone': 'Telemóvel',
+  'auth.phonePlaceholder': '+351 912 345 678',
 
   // Home
   'home.hello': 'Olá,',
@@ -46,17 +58,17 @@ const pt = {
   'home.teamPick.saving': 'A guardar...',
   'home.teamPick.cancel': 'Cancelar',
   'home.teamPick.started': 'O torneio já começou. Escolha bloqueada.',
-  'home.upcoming.title': 'Próximas Apostas',
+  'home.upcoming.title': 'Próximas Previsões',
   'home.standings.title': 'Classificação',
-  'home.standings.bets': 'apostas',
+  'home.standings.bets': 'previsões',
 
-  // Bets
+  // Bets / predictions tab
   'bets.vs': 'vs',
-  'bets.yourBet': 'A tua aposta',
-  'bets.noBet': 'Sem aposta',
-  'bets.place': 'Apostar',
+  'bets.yourBet': 'A tua previsão',
+  'bets.noBet': 'Sem previsão',
+  'bets.place': 'Prever',
   'bets.update': 'Actualizar',
-  'bets.edit': '✏️ Editar aposta',
+  'bets.edit': '✏️ Editar previsão',
   'bets.cancel': 'Cancelar',
   'bets.saving': 'A guardar...',
   'bets.noGames': 'Sem jogos nesta data',
@@ -81,9 +93,9 @@ const pt = {
   'results.tab.games': 'Jogos',
   'results.tab.groups': 'Grupos',
   'results.tab.third': '3os Lugares',
-  'results.noBet': 'sem aposta',
+  'results.noBet': 'sem previsão',
   'results.noResults': 'Ainda não há resultados',
-  'results.bet': 'aposta:',
+  'results.bet': 'previsão:',
   'results.awaitGroups': 'Aguarda os resultados da fase de grupos',
   'results.awaitThird': 'Aguarda os resultados dos grupos',
   'results.col.team': 'Equipa',
@@ -110,17 +122,17 @@ const pt = {
 
   // Standings
   'standings.title': 'Classificação Geral',
-  'standings.bets': 'apostas',
+  'standings.bets': 'previsões',
   'standings.points': 'pontos',
   'standings.me': '(tu)',
   'standings.empty': 'Sem participantes ainda',
-  'standings.legend.points': 'Pontos = apostas + bónus equipa',
-  'standings.legend.bets': 'Apostas = número de jogos apostados',
+  'standings.legend.points': 'Pontos = previsões + bónus equipa',
+  'standings.legend.bets': 'Previsões = número de jogos com previsão',
   'standings.teamBonus': 'pt equipa',
 
   // Rules
   'rules.photo.title': 'Regras do Jogo',
-  'rules.photo.subtitle': 'Lê antes de apostar',
+  'rules.photo.subtitle': 'Lê antes de prever',
   'rules.tournament.title': 'Copa do Mundo 2026',
   'rules.tournament.subtitle': 'EUA, Canadá e México • 11 Jun – 19 Jul 2026',
   'rules.tournament.teams': '48 equipas • 12 grupos de 4',
@@ -133,12 +145,12 @@ const pt = {
   'rules.scoring.exact': '+ Exacto',
   'rules.scoring.trendNote': 'Tendência — acertar em quem ganha, empate ou quem perde',
   'rules.scoring.exactNote': 'Exacto — bónus extra por acertar no resultado exacto',
-  'rules.betting.title': 'Regras das Apostas',
-  'rules.betting.lock.title': 'Apostas fecham no início do jogo',
-  'rules.betting.lock.desc': 'Não é possível apostar nem editar uma aposta após o apito inicial. O prazo é a hora de início oficial do jogo.',
+  'rules.betting.title': 'Regras das Previsões',
+  'rules.betting.lock.title': 'Previsões fecham no início do jogo',
+  'rules.betting.lock.desc': 'Não é possível submeter nem editar uma previsão após o apito inicial. O prazo é a hora de início oficial do jogo.',
   'rules.betting.et.title': 'Penáltis não contam',
-  'rules.betting.et.desc': 'O que conta para a aposta é o resultado ao fim do tempo regulamentar ou prolongamento (90 ou 120 minutos). Se o jogo for decidido nos penáltis, conta como empate.',
-  'rules.teampick.title': 'Aposta na Equipa',
+  'rules.betting.et.desc': 'O que conta para a previsão é o resultado ao fim do tempo regulamentar ou prolongamento (90 ou 120 minutos). Se o jogo for decidido nos penáltis, conta como empate.',
+  'rules.teampick.title': 'Escolha da Equipa',
   'rules.teampick.desc': 'Cada participante escolhe uma equipa vencedora antes do início do torneio. Podes alterar a tua escolha quantas vezes quiseres até ao apito inicial do primeiro jogo. Após o início do torneio a escolha fica bloqueada.',
   'rules.teampick.semi': 'Alcança as Meias e Perde',
   'rules.teampick.final': 'Alcança a Final e Perde',
@@ -153,21 +165,9 @@ const pt = {
   'rules.phase.final': 'Final',
   'rules.phase.games': 'jogos',
 
-  // Phone gate
-  'phone.title': 'Número de Telemóvel',
-  'phone.desc': 'Para participar precisa de registar o teu número de telemóvel.',
-  'phone.label': 'Telemóvel',
-  'phone.placeholder': '+351 912 345 678',
-  'phone.confirm': 'Guardar',
-  'phone.saving': 'A guardar...',
-
-  // Auth phone field
-  'auth.phone': 'Telemóvel',
-  'auth.phonePlaceholder': '+351 912 345 678',
-
   // Toast / errors
-  'toast.betSaved': 'Aposta guardada!',
-  'toast.betError': 'Erro ao guardar aposta',
+  'toast.betSaved': 'Previsão guardada!',
+  'toast.betError': 'Erro ao guardar previsão',
   'toast.resultSaved': 'Resultado guardado!',
   'toast.resultError': 'Resultado inválido',
   'toast.syncOk': 'Sync OK: {n} jogos',
@@ -197,12 +197,12 @@ const en: typeof pt = {
   'app.loading': 'Loading',
   'tabs.home': 'Home',
   'tabs.rules': 'Rules',
-  'tabs.bets': 'Bets',
+  'tabs.bets': 'Predictions',
   'tabs.results': 'Results',
   'tabs.standings': 'Standings',
 
   // Auth
-  'auth.title': 'World Cup 2026 • Bets',
+  'auth.title': 'World Cup 2026 • Predictions',
   'auth.footer': 'Hikma Group • World Cup 2026',
   'auth.login': 'Sign in',
   'auth.register': 'Register',
@@ -214,6 +214,18 @@ const en: typeof pt = {
   'auth.submitting': 'Please wait...',
   'auth.loginButton': 'Sign in',
   'auth.registerButton': 'Create Account',
+
+  // Phone gate
+  'phone.title': 'Phone Number',
+  'phone.desc': 'Please register your phone number to participate.',
+  'phone.label': 'Phone',
+  'phone.placeholder': '+351 912 345 678',
+  'phone.confirm': 'Save',
+  'phone.saving': 'Saving...',
+
+  // Auth phone field
+  'auth.phone': 'Phone',
+  'auth.phonePlaceholder': '+351 912 345 678',
 
   // Home
   'home.hello': 'Hello,',
@@ -236,17 +248,17 @@ const en: typeof pt = {
   'home.teamPick.saving': 'Saving...',
   'home.teamPick.cancel': 'Cancel',
   'home.teamPick.started': 'Tournament has started. Pick is locked.',
-  'home.upcoming.title': 'Upcoming Bets',
+  'home.upcoming.title': 'Upcoming Predictions',
   'home.standings.title': 'Standings',
-  'home.standings.bets': 'bets',
+  'home.standings.bets': 'predictions',
 
-  // Bets
+  // Bets / predictions tab
   'bets.vs': 'vs',
-  'bets.yourBet': 'Your bet',
-  'bets.noBet': 'No bet',
-  'bets.place': 'Place bet',
+  'bets.yourBet': 'Your prediction',
+  'bets.noBet': 'No prediction',
+  'bets.place': 'Predict',
   'bets.update': 'Update',
-  'bets.edit': '✏️ Edit bet',
+  'bets.edit': '✏️ Edit prediction',
   'bets.cancel': 'Cancel',
   'bets.saving': 'Saving...',
   'bets.noGames': 'No games on this date',
@@ -271,9 +283,9 @@ const en: typeof pt = {
   'results.tab.games': 'Games',
   'results.tab.groups': 'Groups',
   'results.tab.third': '3rd Place',
-  'results.noBet': 'no bet',
+  'results.noBet': 'no prediction',
   'results.noResults': 'No results yet',
-  'results.bet': 'bet:',
+  'results.bet': 'prediction:',
   'results.awaitGroups': 'Waiting for group stage results',
   'results.awaitThird': 'Waiting for group results',
   'results.col.team': 'Team',
@@ -300,17 +312,17 @@ const en: typeof pt = {
 
   // Standings
   'standings.title': 'Overall Standings',
-  'standings.bets': 'bets',
+  'standings.bets': 'predictions',
   'standings.points': 'points',
   'standings.me': '(you)',
   'standings.empty': 'No participants yet',
-  'standings.legend.points': 'Points = bets + team bonus',
-  'standings.legend.bets': 'Bets = number of games bet on',
+  'standings.legend.points': 'Points = predictions + team bonus',
+  'standings.legend.bets': 'Predictions = number of games predicted',
   'standings.teamBonus': 'pt team',
 
   // Rules
   'rules.photo.title': 'Rules',
-  'rules.photo.subtitle': 'Read before betting',
+  'rules.photo.subtitle': 'Read before predicting',
   'rules.tournament.title': 'FIFA World Cup 2026',
   'rules.tournament.subtitle': 'USA, Canada & Mexico • Jun 11 – Jul 19 2026',
   'rules.tournament.teams': '48 teams • 12 groups of 4',
@@ -323,11 +335,11 @@ const en: typeof pt = {
   'rules.scoring.exact': '+ Exact',
   'rules.scoring.trendNote': 'Outcome — correctly predicting the winner, draw, or loser',
   'rules.scoring.exactNote': 'Exact — bonus points for predicting the exact scoreline',
-  'rules.betting.title': 'Betting Rules',
-  'rules.betting.lock.title': 'Bets close at kick-off',
-  'rules.betting.lock.desc': 'You cannot place or edit a bet after the opening whistle. The deadline is the official kick-off time.',
+  'rules.betting.title': 'Prediction Rules',
+  'rules.betting.lock.title': 'Predictions close at kick-off',
+  'rules.betting.lock.desc': 'You cannot submit or edit a prediction after the opening whistle. The deadline is the official kick-off time.',
   'rules.betting.et.title': "Penalties don't count",
-  'rules.betting.et.desc': 'What counts for your bet is the result at the end of regular time or extra time (90 or 120 minutes). If the game is decided on penalties, it counts as a draw.',
+  'rules.betting.et.desc': 'What counts for your prediction is the result at the end of regular time or extra time (90 or 120 minutes). If the game is decided on penalties, it counts as a draw.',
   'rules.teampick.title': 'Team Pick',
   'rules.teampick.desc': 'Each participant picks a winning team before the tournament starts. You can change your pick as many times as you like until the opening whistle. After the tournament starts, your pick is locked.',
   'rules.teampick.semi': 'Reaches Semi-finals and Loses',
@@ -343,21 +355,9 @@ const en: typeof pt = {
   'rules.phase.final': 'Final',
   'rules.phase.games': 'games',
 
-  // Phone gate
-  'phone.title': 'Phone Number',
-  'phone.desc': 'Please register your phone number to participate.',
-  'phone.label': 'Phone',
-  'phone.placeholder': '+351 912 345 678',
-  'phone.confirm': 'Save',
-  'phone.saving': 'Saving...',
-
-  // Auth phone field
-  'auth.phone': 'Phone',
-  'auth.phonePlaceholder': '+351 912 345 678',
-
   // Toast / errors
-  'toast.betSaved': 'Bet saved!',
-  'toast.betError': 'Error saving bet',
+  'toast.betSaved': 'Prediction saved!',
+  'toast.betError': 'Error saving prediction',
   'toast.resultSaved': 'Result saved!',
   'toast.resultError': 'Invalid result',
   'toast.syncOk': 'Sync OK: {n} games',
