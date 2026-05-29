@@ -153,6 +153,18 @@ const pt = {
   'rules.phase.final': 'Final',
   'rules.phase.games': 'jogos',
 
+  // Phone gate
+  'phone.title': 'Número de Telemóvel',
+  'phone.desc': 'Para participar precisa de registar o teu número de telemóvel.',
+  'phone.label': 'Telemóvel',
+  'phone.placeholder': '+351 912 345 678',
+  'phone.confirm': 'Guardar',
+  'phone.saving': 'A guardar...',
+
+  // Auth phone field
+  'auth.phone': 'Telemóvel',
+  'auth.phonePlaceholder': '+351 912 345 678',
+
   // Toast / errors
   'toast.betSaved': 'Aposta guardada!',
   'toast.betError': 'Erro ao guardar aposta',
@@ -173,6 +185,9 @@ const pt = {
   'toast.fillFields': 'Preenche todos os campos',
   'toast.passwordMin': 'Password deve ter pelo menos 6 caracteres',
   'toast.passwordMismatch': 'Passwords não coincidem',
+  'toast.phoneSaved': 'Telemóvel guardado!',
+  'toast.phoneError': 'Erro ao guardar telemóvel',
+  'toast.phoneInvalid': 'Insere um número de telemóvel válido',
 };
 
 const en: typeof pt = {
@@ -328,6 +343,18 @@ const en: typeof pt = {
   'rules.phase.final': 'Final',
   'rules.phase.games': 'games',
 
+  // Phone gate
+  'phone.title': 'Phone Number',
+  'phone.desc': 'Please register your phone number to participate.',
+  'phone.label': 'Phone',
+  'phone.placeholder': '+351 912 345 678',
+  'phone.confirm': 'Save',
+  'phone.saving': 'Saving...',
+
+  // Auth phone field
+  'auth.phone': 'Phone',
+  'auth.phonePlaceholder': '+351 912 345 678',
+
   // Toast / errors
   'toast.betSaved': 'Bet saved!',
   'toast.betError': 'Error saving bet',
@@ -348,6 +375,9 @@ const en: typeof pt = {
   'toast.fillFields': 'Please fill in all fields',
   'toast.passwordMin': 'Password must be at least 6 characters',
   'toast.passwordMismatch': 'Passwords do not match',
+  'toast.phoneSaved': 'Phone number saved!',
+  'toast.phoneError': 'Error saving phone number',
+  'toast.phoneInvalid': 'Please enter a valid phone number',
 };
 
 export const translations: Record<Language, typeof pt> = { pt, en };

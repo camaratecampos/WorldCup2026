@@ -26,8 +26,8 @@ app.use('/api/groups', groupsRouter);
 
 app.get('/api/me', authMiddleware, async (req: AuthRequest, res: Response): Promise<void> => {
   try {
-    const user = await queryOne<{ id: number; username: string; team_pick: string | null; created_at: string }>(
-      'SELECT id, username, team_pick, created_at FROM users WHERE id = $1',
+    const user = await queryOne<{ id: number; username: string; team_pick: string | null; created_at: string; phone: string | null }>(
+      'SELECT id, username, team_pick, created_at, phone FROM users WHERE id = $1',
       [req.user!.userId]
     );
     if (!user) { res.status(404).json({ error: 'User not found' }); return; }
@@ -37,7 +37,24 @@ app.get('/api/me', authMiddleware, async (req: AuthRequest, res: Response): Prom
       teamPick: user.team_pick,
       createdAt: user.created_at,
       isAdmin: user.username === 'admin',
+      phone: user.phone,
     });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// PUT /api/me/phone - user sets their phone number
+app.put('/api/me/phone', authMiddleware, async (req: AuthRequest, res: Response): Promise<void> => {
+  const { phone } = req.body;
+  if (!phone || typeof phone !== 'string' || phone.trim().length < 5) {
+    res.status(400).json({ error: 'Phone number must be at least 5 characters' });
+    return;
+  }
+  try {
+    await execute('UPDATE users SET phone = $1 WHERE id = $2', [phone.trim(), req.user!.userId]);
+    res.json({ success: true });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Internal server error' });

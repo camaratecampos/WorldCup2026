@@ -6,6 +6,7 @@ interface User {
   username: string;
   teamPick: string | null;
   isAdmin: boolean;
+  phone: string | null;
 }
 
 interface AuthContextType {
@@ -13,7 +14,7 @@ interface AuthContextType {
   token: string | null;
   loading: boolean;
   login: (username: string, password: string) => Promise<void>;
-  register: (username: string, password: string) => Promise<void>;
+  register: (username: string, password: string, phone: string) => Promise<void>;
   logout: () => void;
   refreshUser: () => Promise<void>;
 }
@@ -55,8 +56,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await refreshUser();
   };
 
-  const register = async (username: string, password: string) => {
-    const data = await api.register(username, password);
+  const register = async (username: string, password: string, phone: string) => {
+    const data = await api.register(username, password, phone);
     localStorage.setItem('token', data.token);
     setToken(data.token);
     await refreshUser();

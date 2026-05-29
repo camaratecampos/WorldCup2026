@@ -201,7 +201,7 @@ export function Bets() {
   const [dates, setDates] = useState<string[]>([]);
   const [adminMode, setAdminMode] = useState(false);
   const [syncing, setSyncing] = useState(false);
-  const [users, setUsers] = useState<{ id: number; username: string }[]>([]);
+  const [users, setUsers] = useState<{ id: number; username: string; phone: string | null }[]>([]);
   const [renamingUserId, setRenamingUserId] = useState<number | null>(null);
   const [renameInput, setRenameInput] = useState('');
   const [renamingSaving, setRenamingSaving] = useState(false);
@@ -305,7 +305,10 @@ export function Bets() {
                       </>
                     ) : (
                       <>
-                        <span className="flex-1 text-white/80 text-xs font-medium">{u.username}</span>
+                        <div className="flex-1 min-w-0">
+                          <span className="text-white/80 text-xs font-medium">{u.username}</span>
+                          {u.phone && <span className="ml-2 text-white/40 text-xs">{u.phone}</span>}
+                        </div>
                         <button onClick={() => { setRenamingUserId(u.id); setRenameInput(''); }}
                           className="text-orange-400/60 hover:text-orange-300 text-xs transition-colors">✏️</button>
                       </>

@@ -6,7 +6,7 @@ import { signToken } from '../auth';
 const router = Router();
 
 router.post('/register', async (req: Request, res: Response): Promise<void> => {
-  const { username, password } = req.body;
+  const { username, password, phone } = req.body;
 
   if (!username || !password) {
     res.status(400).json({ error: 'Username and password are required' });
@@ -23,6 +23,11 @@ router.post('/register', async (req: Request, res: Response): Promise<void> => {
     return;
   }
 
+  if (!phone || typeof phone !== 'string' || phone.trim().length < 5) {
+    res.status(400).json({ error: 'Phone number is required' });
+    return;
+  }
+
   try {
     const existing = await queryOne<{ id: number }>(
       'SELECT id FROM users WHERE username = $1',
@@ -35,8 +40,8 @@ router.post('/register', async (req: Request, res: Response): Promise<void> => {
 
     const hash = bcrypt.hashSync(password, 10);
     const newUser = await queryOne<{ id: number }>(
-      'INSERT INTO users (username, password_hash) VALUES ($1, $2) RETURNING id',
-      [username, hash]
+      'INSERT INTO users (username, password_hash, phone) VALUES ($1, $2, $3) RETURNING id',
+      [username, hash, phone.trim()]
     );
     const userId = newUser!.id;
 

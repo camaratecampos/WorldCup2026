@@ -58,6 +58,7 @@ export async function initDb(): Promise<void> {
   `);
 
   // Migrations for existing deployments
+  await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS phone TEXT;`).catch(() => {});
   await pool.query(`ALTER TABLE games ADD COLUMN IF NOT EXISTS espn_id TEXT;`).catch(() => {});
   await pool.query(`ALTER TABLE games ADD COLUMN IF NOT EXISTS venue TEXT NOT NULL DEFAULT '';`).catch(() => {});
   await pool.query(

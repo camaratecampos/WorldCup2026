@@ -79,8 +79,8 @@ router.post('/sync', authMiddleware, async (req: AuthRequest, res: Response): Pr
 router.get('/users', authMiddleware, async (req: AuthRequest, res: Response): Promise<void> => {
   if (!requireAdmin(req, res)) return;
   try {
-    const users = await query<{ id: number; username: string }>(
-      'SELECT id, username FROM users ORDER BY id ASC'
+    const users = await query<{ id: number; username: string; phone: string | null }>(
+      'SELECT id, username, phone FROM users ORDER BY id ASC'
     );
     res.json(users);
   } catch (err) {

@@ -36,19 +36,25 @@ export const api = {
       body: JSON.stringify({ username, password }),
     }),
 
-  register: (username: string, password: string) =>
+  register: (username: string, password: string, phone: string) =>
     request<{ token: string; username: string; userId: number }>('/auth/register', {
       method: 'POST',
-      body: JSON.stringify({ username, password }),
+      body: JSON.stringify({ username, password, phone }),
     }),
 
   // User
-  getMe: () => request<{ id: number; username: string; teamPick: string | null; isAdmin: boolean }>('/me'),
+  getMe: () => request<{ id: number; username: string; teamPick: string | null; isAdmin: boolean; phone: string | null }>('/me'),
 
   renameMe: (username: string) =>
     request<{ token: string; username: string }>('/me/username', {
       method: 'PUT',
       body: JSON.stringify({ username }),
+    }),
+
+  setPhone: (phone: string) =>
+    request<{ success: boolean }>('/me/phone', {
+      method: 'PUT',
+      body: JSON.stringify({ phone }),
     }),
 
   setTeamPick: (team: string) =>

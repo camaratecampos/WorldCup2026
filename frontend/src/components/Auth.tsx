@@ -10,6 +10,7 @@ export function Auth() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [phone, setPhone] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -27,6 +28,10 @@ export function Auth() {
         showToast(t('toast.passwordMismatch'), 'error');
         return;
       }
+      if (!phone.trim() || phone.trim().length < 5) {
+        showToast(t('toast.phoneInvalid'), 'error');
+        return;
+      }
     }
     setLoading(true);
     try {
@@ -34,7 +39,7 @@ export function Auth() {
         await login(username, password);
         showToast(t('toast.welcome'), 'success');
       } else {
-        await register(username, password);
+        await register(username, password, phone.trim());
         showToast(t('toast.registered'), 'success');
       }
     } catch (err: unknown) {
@@ -117,19 +122,34 @@ export function Auth() {
             </div>
 
             {tab === 'register' && (
-              <div>
-                <label className="block text-white/50 text-[10px] mb-1.5 font-bold uppercase tracking-widest">
-                  {t('auth.confirmPassword')}
-                </label>
-                <input
-                  type="password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/25 focus:outline-none focus:border-gold/60 focus:bg-white/15 transition-all text-sm font-medium"
-                  placeholder={t('auth.passwordPlaceholder')}
-                  autoComplete="new-password"
-                />
-              </div>
+              <>
+                <div>
+                  <label className="block text-white/50 text-[10px] mb-1.5 font-bold uppercase tracking-widest">
+                    {t('auth.confirmPassword')}
+                  </label>
+                  <input
+                    type="password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/25 focus:outline-none focus:border-gold/60 focus:bg-white/15 transition-all text-sm font-medium"
+                    placeholder={t('auth.passwordPlaceholder')}
+                    autoComplete="new-password"
+                  />
+                </div>
+                <div>
+                  <label className="block text-white/50 text-[10px] mb-1.5 font-bold uppercase tracking-widest">
+                    {t('auth.phone')}
+                  </label>
+                  <input
+                    type="tel"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/25 focus:outline-none focus:border-gold/60 focus:bg-white/15 transition-all text-sm font-medium"
+                    placeholder={t('auth.phonePlaceholder')}
+                    autoComplete="tel"
+                  />
+                </div>
+              </>
             )}
 
             <button

@@ -6,6 +6,7 @@ export interface User {
   teamPick: string | null;
   createdAt: string;
   isAdmin: boolean;
+  phone: string | null;
 }
 
 export interface Game {

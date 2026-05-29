@@ -7,6 +7,7 @@ import { Rules } from './components/tabs/Rules';
 import { Bets } from './components/tabs/Bets';
 import { Results } from './components/tabs/Results';
 import { Standings } from './components/tabs/Standings';
+import { PhoneGate } from './components/PhoneGate';
 import { LoadingSpinner } from './components/ui/LoadingSpinner';
 import { ToastContainer } from './components/ui/Toast';
 
@@ -42,6 +43,15 @@ function App() {
       <>
         <ToastContainer />
         <Auth />
+      </>
+    );
+  }
+
+  if (!user.phone) {
+    return (
+      <>
+        <ToastContainer />
+        <PhoneGate />
       </>
     );
   }
