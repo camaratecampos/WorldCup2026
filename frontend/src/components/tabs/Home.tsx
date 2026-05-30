@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useLang } from '../../context/LanguageContext';
+import { theme } from '../../theme';
 import api from '../../api';
 import { Game, StandingEntry } from '../../types';
 import { allTeams } from '../../utils/flags';
@@ -155,14 +156,18 @@ export function Home() {
 
   return (
     <div className="space-y-4 pb-4">
-      {/* Hero photo */}
+      {/* Hero photo / gradient */}
       <div className="relative h-44 rounded-2xl overflow-hidden">
-        <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: "url('/hikma-lab.png')" }} />
+        {theme.heroPhoto ? (
+          <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url('${theme.heroPhoto}')` }} />
+        ) : (
+          <div className="absolute inset-0 bg-gradient-to-br from-primary-dark via-primary to-primary-light" />
+        )}
         <div className="absolute inset-0 bg-gradient-to-t from-primary-dark via-primary-dark/40 to-transparent" />
         <div className="absolute inset-0 bg-gradient-to-r from-primary-dark/50 to-transparent" />
         <div className="absolute bottom-4 left-4">
-          <div className="text-[10px] font-black text-hikma uppercase tracking-widest mb-1">Copa Hikma 2026</div>
-          <p className="text-white/55 text-xs font-medium">May the best predictor win</p>
+          <div className="text-[10px] font-black text-hikma uppercase tracking-widest mb-1">{theme.heroTagline}</div>
+          <p className="text-white/55 text-xs font-medium">{theme.heroSubtitle}</p>
         </div>
       </div>
 

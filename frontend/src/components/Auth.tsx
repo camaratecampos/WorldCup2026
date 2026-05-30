@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useLang } from '../context/LanguageContext';
+import { theme } from '../theme';
 import { showToast } from './ui/Toast';
 
 export function Auth() {
@@ -51,11 +52,12 @@ export function Auth() {
 
   return (
     <div className="min-h-screen relative flex flex-col items-center justify-center px-4 overflow-hidden">
-      {/* Background photo */}
-      <div
-        className="absolute inset-0 bg-cover bg-center scale-105"
-        style={{ backgroundImage: "url('/hikma-cleanroom.png')" }}
-      />
+      {/* Background photo or gradient */}
+      {theme.authPhoto ? (
+        <div className="absolute inset-0 bg-cover bg-center scale-105" style={{ backgroundImage: `url('${theme.authPhoto}')` }} />
+      ) : (
+        <div className="absolute inset-0 bg-gradient-to-br from-primary-dark via-primary to-primary-light" />
+      )}
       {/* Overlay */}
       <div className="absolute inset-0 bg-primary/75 backdrop-blur-[2px]" />
 
@@ -65,7 +67,7 @@ export function Auth() {
         <div className="text-center mb-8">
           <div className="text-5xl mb-4">⚽</div>
           <h1 className="text-4xl font-black leading-none tracking-tight">
-            <span className="text-hikma">hikma</span><span className="text-hikma">.</span>
+            <span className="text-hikma">{theme.logoText}</span>
           </h1>
           <p className="text-white/50 text-sm mt-2 font-medium">{t('auth.title')}</p>
         </div>
@@ -162,7 +164,7 @@ export function Auth() {
           </form>
         </div>
 
-        <p className="text-white/25 text-xs text-center mt-6 font-medium">{t('auth.footer')}</p>
+        <p className="text-white/25 text-xs text-center mt-6 font-medium">{theme.appFooter}</p>
       </div>
     </div>
   );

@@ -1,6 +1,7 @@
 import { teamsByGroup } from '../../utils/flags';
 import { Flag } from '../ui/Flag';
 import { useLang } from '../../context/LanguageContext';
+import { theme } from '../../theme';
 
 export function Rules() {
   const { t } = useLang();
@@ -26,9 +27,13 @@ export function Rules() {
 
   return (
     <div className="space-y-4 pb-4">
-      {/* Photo header */}
+      {/* Photo / gradient header */}
       <div className="relative h-40 rounded-2xl overflow-hidden">
-        <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: "url('/hikma-factory.png')" }} />
+        {theme.rulesPhoto ? (
+          <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url('${theme.rulesPhoto}')` }} />
+        ) : (
+          <div className="absolute inset-0 bg-gradient-to-br from-primary-dark via-primary to-primary-light" />
+        )}
         <div className="absolute inset-0 bg-gradient-to-t from-primary-dark via-primary-dark/40 to-transparent" />
         <div className="absolute inset-0 bg-gradient-to-r from-primary-dark/60 to-transparent" />
         <div className="absolute bottom-4 left-4">

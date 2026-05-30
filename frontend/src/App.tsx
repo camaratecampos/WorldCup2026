@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useAuth } from './context/AuthContext';
 import { useLang } from './context/LanguageContext';
+import { theme } from './theme';
 import { Auth } from './components/Auth';
 import { Home } from './components/tabs/Home';
 import { Rules } from './components/tabs/Rules';
@@ -65,19 +66,22 @@ function App() {
         <div className="flex items-center gap-2.5">
           <span className="text-xl">⚽</span>
           <div className="flex items-baseline gap-1.5">
-            <span className="font-black text-lg leading-none text-hikma">hikma.</span>
+            <span className="font-black text-lg leading-none text-hikma">{theme.logoText}</span>
             <span className="text-white/35 text-xs font-medium">{t('app.subtitle')}</span>
           </div>
         </div>
         <div className="flex items-center gap-1.5">
-          {/* Language toggle */}
-          <button
-            onClick={() => setLang(lang === 'pt' ? 'en' : 'pt')}
-            className="text-white/40 text-xs font-bold hover:text-white/70 transition-colors px-2 py-1 rounded-lg hover:bg-white/10 tracking-wide"
-          >
-            {lang === 'pt' ? 'EN' : 'PT'}
-          </button>
-          <span className="text-white/20 text-xs">|</span>
+          {theme.multiLang && (
+            <>
+              <button
+                onClick={() => setLang(lang === 'pt' ? 'en' : 'pt')}
+                className="text-white/40 text-xs font-bold hover:text-white/70 transition-colors px-2 py-1 rounded-lg hover:bg-white/10 tracking-wide"
+              >
+                {lang === 'pt' ? 'EN' : 'PT'}
+              </button>
+              <span className="text-white/20 text-xs">|</span>
+            </>
+          )}
           <span className="text-white/55 text-sm font-medium">{user.username}</span>
           <button
             onClick={logout}
