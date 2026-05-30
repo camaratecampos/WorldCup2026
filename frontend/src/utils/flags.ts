@@ -28,7 +28,7 @@ const teamCodes: Record<string, string> = {
 export function getFlagUrl(team: string): string {
   const code = teamCodes[team];
   if (!code) return '';
-  return `https://flagcdn.com/w40/${code}.png`;
+  return `/flags/${code}.svg`;
 }
 
 export function getFlag(team: string): string {

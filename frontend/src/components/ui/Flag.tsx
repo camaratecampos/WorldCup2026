@@ -16,8 +16,8 @@ export function Flag({ team, size = 'md' }: FlagProps) {
       src={url}
       alt={team}
       width={px}
-      height={px * 0.67}
-      style={{ objectFit: 'cover', borderRadius: 2, display: 'inline-block' }}
+      height={Math.round(px * 0.75)}
+      style={{ objectFit: 'cover', borderRadius: 2, display: 'inline-block', flexShrink: 0 }}
     />
   );
 }
