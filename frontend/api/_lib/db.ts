@@ -52,6 +52,7 @@ export async function initDb(): Promise<void> {
       id SERIAL PRIMARY KEY,
       username TEXT UNIQUE NOT NULL,
       password_hash TEXT NOT NULL,
+      phone TEXT,
       team_pick TEXT,
       created_at TIMESTAMPTZ DEFAULT NOW()
     );
