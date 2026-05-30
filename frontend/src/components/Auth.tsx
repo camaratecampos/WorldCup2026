@@ -29,7 +29,7 @@ export function Auth() {
         showToast(t('toast.passwordMismatch'), 'error');
         return;
       }
-      if (!phone.trim() || phone.trim().length < 5) {
+      if (theme.requirePhone && (!phone.trim() || phone.trim().length < 5)) {
         showToast(t('toast.phoneInvalid'), 'error');
         return;
       }
@@ -138,19 +138,21 @@ export function Auth() {
                     autoComplete="new-password"
                   />
                 </div>
-                <div>
-                  <label className="block text-white/50 text-[10px] mb-1.5 font-bold uppercase tracking-widest">
-                    {t('auth.phone')}
-                  </label>
-                  <input
-                    type="tel"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/25 focus:outline-none focus:border-gold/60 focus:bg-white/15 transition-all text-sm font-medium"
-                    placeholder={t('auth.phonePlaceholder')}
-                    autoComplete="tel"
-                  />
-                </div>
+                {theme.requirePhone && (
+                  <div>
+                    <label className="block text-white/50 text-[10px] mb-1.5 font-bold uppercase tracking-widest">
+                      {t('auth.phone')}
+                    </label>
+                    <input
+                      type="tel"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/25 focus:outline-none focus:border-gold/60 focus:bg-white/15 transition-all text-sm font-medium"
+                      placeholder={t('auth.phonePlaceholder')}
+                      autoComplete="tel"
+                    />
+                  </div>
+                )}
               </>
             )}
 
