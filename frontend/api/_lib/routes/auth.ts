@@ -23,7 +23,9 @@ router.post('/register', async (req: Request, res: Response): Promise<void> => {
     return;
   }
 
-  if (!phone || typeof phone !== 'string' || phone.trim().length < 5) {
+  const phoneVal = phone && typeof phone === 'string' && phone.trim().length >= 5 ? phone.trim() : null;
+  const requirePhone = process.env.DB_SCHEMA !== 'family';
+  if (requirePhone && !phoneVal) {
     res.status(400).json({ error: 'Phone number is required' });
     return;
   }
@@ -41,7 +43,7 @@ router.post('/register', async (req: Request, res: Response): Promise<void> => {
     const hash = bcrypt.hashSync(password, 10);
     const newUser = await queryOne<{ id: number }>(
       'INSERT INTO users (username, password_hash, phone) VALUES ($1, $2, $3) RETURNING id',
-      [username, hash, phone.trim()]
+      [username, hash, phoneVal]
     );
     const userId = newUser!.id;
 
