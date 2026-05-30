@@ -1,8 +1,18 @@
 import { Pool } from 'pg';
 import bcrypt from 'bcryptjs';
 
+// If DB_SCHEMA is set (e.g. "family"), route all queries to that schema
+// by appending search_path to the connection string options.
+function buildConnectionString(): string {
+  const base = process.env.DATABASE_URL || '';
+  const schema = process.env.DB_SCHEMA;
+  if (!schema || schema === 'public') return base;
+  const sep = base.includes('?') ? '&' : '?';
+  return `${base}${sep}options=${encodeURIComponent(`-c search_path=${schema},public`)}`;
+}
+
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
+  connectionString: buildConnectionString(),
   ssl: process.env.DATABASE_URL && process.env.DATABASE_URL.includes('localhost')
     ? false
     : { rejectUnauthorized: false },
@@ -31,6 +41,12 @@ export async function execute(sql: string, params?: unknown[]): Promise<void> {
 }
 
 export async function initDb(): Promise<void> {
+  const schema = process.env.DB_SCHEMA;
+  if (schema && schema !== 'public') {
+    await pool.query(`CREATE SCHEMA IF NOT EXISTS "${schema}"`);
+    await pool.query(`SET search_path TO "${schema}", public`);
+  }
+
   await pool.query(`
     CREATE TABLE IF NOT EXISTS users (
       id SERIAL PRIMARY KEY,
