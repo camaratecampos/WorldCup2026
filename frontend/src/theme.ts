@@ -11,6 +11,7 @@ export interface AppTheme {
   rulesPhoto: string | null;
   authPhoto: string | null;
   multiLang: boolean;         // show EN/PT language toggle
+  requirePhone: boolean;      // block login until phone is on file
 }
 
 const hikma: AppTheme = {
@@ -23,11 +24,12 @@ const hikma: AppTheme = {
   rulesPhoto: '/hikma-factory.png',
   authPhoto: '/hikma-cleanroom.png',
   multiLang: true,
+  requirePhone: true,
 };
 
 const family: AppTheme = {
   id: 'family',
-  logoText: 'familia.',
+  logoText: 'Familia GF CC',
   appFooter: 'Familia GF & CC • Copa do Mundo 2026',
   heroTagline: 'Familia GF & CC',
   heroSubtitle: 'Que vença o melhor!',
@@ -35,6 +37,7 @@ const family: AppTheme = {
   rulesPhoto: null,
   authPhoto: null,
   multiLang: false,
+  requirePhone: false,
 };
 
 const themeId = import.meta.env.VITE_APP_THEME === 'family' ? 'family' : 'hikma';

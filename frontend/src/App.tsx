@@ -48,7 +48,7 @@ function App() {
     );
   }
 
-  if (!user.phone) {
+  if (theme.requirePhone && !user.phone) {
     return (
       <>
         <ToastContainer />
