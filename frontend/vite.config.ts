@@ -17,13 +17,18 @@ export default defineConfig(({ mode }) => {
     plugins: [
       react(),
       {
-        // Fill %VITE_*% placeholders in index.html using env vars or Hikma defaults
+        // Fill %VITE_*% placeholders in index.html using env vars or Hikma defaults.
+        // order:'pre' ensures substitution runs before Vite's own HTML processor
+        // tries to decodeURI() the href/src attributes (which would choke on bare %).
         name: 'html-env-defaults',
-        transformIndexHtml(html) {
-          return html.replace(/%VITE_([^%]+)%/g, (match, key) => {
-            const full = `VITE_${key}`;
-            return env[full] ?? HTML_DEFAULTS[full] ?? match;
-          });
+        transformIndexHtml: {
+          order: 'pre',
+          handler(html) {
+            return html.replace(/%VITE_([^%]+)%/g, (match, key) => {
+              const full = `VITE_${key}`;
+              return env[full] ?? HTML_DEFAULTS[full] ?? match;
+            });
+          },
         },
       },
     ],
