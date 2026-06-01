@@ -77,6 +77,9 @@ export const api = {
 
   getMyBets: () => request<import('./types').Bet[]>('/bets/my'),
 
+  getGamePredictions: (gameId: number) =>
+    request<import('./types').GamePrediction[]>(`/bets/game/${gameId}`),
+
   // Standings
   getStandings: () => request<import('./types').StandingEntry[]>('/standings'),
 

@@ -3,6 +3,7 @@ import api from '../../api';
 import { GameWithBet, TeamStats } from '../../types';
 import { Flag } from '../ui/Flag';
 import { LoadingSpinner } from '../ui/LoadingSpinner';
+import { PredictionsPanel } from '../ui/PredictionsPanel';
 import { useLang } from '../../context/LanguageContext';
 
 type SubTab = 'games' | 'groups' | 'third';
@@ -86,6 +87,12 @@ function ResultCard({ game }: { game: GameWithBet }) {
           <Flag team={game.away_team} size="sm" />
         </div>
       </div>
+      <PredictionsPanel
+        gameId={game.id}
+        actualHome={game.home_score}
+        actualAway={game.away_score}
+        finished={game.status === 'finished'}
+      />
     </div>
   );
 }

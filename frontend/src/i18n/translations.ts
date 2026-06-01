@@ -165,6 +165,11 @@ const pt = {
   'rules.phase.final': 'Final',
   'rules.phase.games': 'jogos',
 
+  // Predictions panel
+  'predictions.show': 'Ver previsões',
+  'predictions.hide': 'Ocultar',
+  'predictions.empty': 'Sem previsões ainda',
+
   // Toast / errors
   'toast.betSaved': 'Previsão guardada!',
   'toast.betError': 'Erro ao guardar previsão',
@@ -354,6 +359,11 @@ const en: typeof pt = {
   'rules.phase.3rd': '3rd & 4th Place',
   'rules.phase.final': 'Final',
   'rules.phase.games': 'games',
+
+  // Predictions panel
+  'predictions.show': 'Show predictions',
+  'predictions.hide': 'Hide',
+  'predictions.empty': 'No predictions yet',
 
   // Toast / errors
   'toast.betSaved': 'Prediction saved!',

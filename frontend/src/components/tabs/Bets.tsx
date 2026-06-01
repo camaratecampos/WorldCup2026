@@ -4,6 +4,7 @@ import { Game, Bet } from '../../types';
 import { LoadingSpinner } from '../ui/LoadingSpinner';
 import { Flag } from '../ui/Flag';
 import { showToast } from '../ui/Toast';
+import { PredictionsPanel } from '../ui/PredictionsPanel';
 import { useAuth } from '../../context/AuthContext';
 import { useLang } from '../../context/LanguageContext';
 
@@ -136,6 +137,16 @@ function GameCard({ game, bet, onBetPlaced }: GameCardProps) {
           className="mt-3 w-full bg-white/10 text-white/70 text-xs py-1.5 rounded-xl hover:bg-white/20">
           {t('bets.edit')}
         </button>
+      )}
+
+      {/* Show others' predictions once the game has kicked off */}
+      {!canBet && (
+        <PredictionsPanel
+          gameId={game.id}
+          actualHome={game.home_score}
+          actualAway={game.away_score}
+          finished={game.status === 'finished'}
+        />
       )}
     </div>
   );

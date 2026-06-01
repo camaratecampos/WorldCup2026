@@ -72,6 +72,12 @@ export interface GameWithBet extends Game {
   points: number | null;
 }
 
+export interface GamePrediction {
+  username: string;
+  home_score: number;
+  away_score: number;
+}
+
 export interface AuthResponse {
   token: string;
   username: string;

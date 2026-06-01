@@ -81,6 +81,25 @@ router.get('/my', authMiddleware, async (req: AuthRequest, res: Response): Promi
   }
 });
 
+// GET /api/bets/game/:gameId - all participants' predictions for a game
+router.get('/game/:gameId', authMiddleware, async (req: AuthRequest, res: Response): Promise<void> => {
+  const gameId = parseInt(req.params.gameId);
+  if (isNaN(gameId)) { res.status(400).json({ error: 'Invalid game id' }); return; }
+  try {
+    const predictions = await query<{ username: string; home_score: number; away_score: number }>(
+      `SELECT u.username, b.home_score, b.away_score
+       FROM bets b JOIN users u ON u.id = b.user_id
+       WHERE b.game_id = $1
+       ORDER BY u.username`,
+      [gameId]
+    );
+    res.json(predictions);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 // Suppress unused import warning
 void calculateBetPoints;
 void ('' as unknown as Phase);
