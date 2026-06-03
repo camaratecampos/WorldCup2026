@@ -216,6 +216,7 @@ export function Bets() {
   const [renamingSaving, setRenamingSaving] = useState(false);
   const [deletingUserId, setDeletingUserId] = useState<number | null>(null);
   const [resetPassUserId, setResetPassUserId] = useState<number | null>(null);
+  const [resetPassInput, setResetPassInput] = useState('');
   const [resetPassSaving, setResetPassSaving] = useState(false);
 
   const loadGames = useCallback(async () => {
@@ -272,11 +273,16 @@ export function Bets() {
   }
 
   async function handleAdminResetPass(userId: number) {
+    if (resetPassInput.trim().length < 4) {
+      showToast('Password temporária deve ter pelo menos 4 caracteres', 'error');
+      return;
+    }
     setResetPassSaving(true);
     try {
-      await api.adminResetPassword(userId);
-      showToast('Reset solicitado!', 'success');
+      await api.adminResetPassword(userId, resetPassInput.trim());
+      showToast('Password temporária definida — utilizador terá que alterar no próximo login', 'success');
       setResetPassUserId(null);
+      setResetPassInput('');
     } catch (err: unknown) {
       showToast(err instanceof Error ? err.message : 'Erro ao resetar password', 'error');
     } finally {
@@ -356,13 +362,21 @@ export function Bets() {
                       </div>
                     )}
 
-                    {/* Inline reset password confirmation */}
+                    {/* Inline reset password — admin sets a temp password */}
                     {resetPassUserId === u.id && (
                       <div className="flex items-center gap-2 pl-2">
-                        <span className="text-orange-300 text-xs flex-1">{t('bets.admin.resetPass')} <strong>{u.username}</strong>?</span>
+                        <input
+                          type="text"
+                          value={resetPassInput}
+                          onChange={(e) => setResetPassInput(e.target.value)}
+                          onKeyDown={(e) => e.key === 'Enter' && handleAdminResetPass(u.id)}
+                          className="flex-1 bg-primary-dark border border-orange-500/40 rounded-lg px-2 py-1 text-white text-xs focus:outline-none focus:border-orange-400"
+                          placeholder="Password temporária"
+                          autoFocus
+                        />
                         <button onClick={() => handleAdminResetPass(u.id)} disabled={resetPassSaving}
-                          className="text-orange-300 text-xs font-black disabled:opacity-50">{resetPassSaving ? '...' : 'Sim'}</button>
-                        <button onClick={() => setResetPassUserId(null)} className="text-white/40 text-xs">Não</button>
+                          className="text-orange-300 text-xs font-black disabled:opacity-50">{resetPassSaving ? '...' : 'OK'}</button>
+                        <button onClick={() => { setResetPassUserId(null); setResetPassInput(''); }} className="text-white/40 text-xs">✕</button>
                       </div>
                     )}
 

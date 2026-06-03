@@ -120,8 +120,11 @@ export const api = {
   adminDeleteUser: (userId: number) =>
     request<{ success: boolean }>(`/admin/users/${userId}`, { method: 'DELETE' }),
 
-  adminResetPassword: (userId: number) =>
-    request<{ success: boolean }>(`/admin/users/${userId}/password`, { method: 'PUT' }),
+  adminResetPassword: (userId: number, tempPassword: string) =>
+    request<{ success: boolean }>(`/admin/users/${userId}/password`, {
+      method: 'PUT',
+      body: JSON.stringify({ password: tempPassword }),
+    }),
 };
 
 export default api;

@@ -135,14 +135,24 @@ router.delete('/users/:userId', authMiddleware, async (req: AuthRequest, res: Re
   }
 });
 
-// PUT /api/admin/users/:userId/password - flag user to reset password on next login
+// PUT /api/admin/users/:userId/password - set temp password and force reset on next login
 router.put('/users/:userId/password', authMiddleware, async (req: AuthRequest, res: Response): Promise<void> => {
   if (!requireAdmin(req, res)) return;
   const userId = parseInt(req.params.userId, 10);
+  const { password } = req.body;
+  if (!password || typeof password !== 'string' || password.length < 4) {
+    res.status(400).json({ error: 'Temporary password must be at least 4 characters' });
+    return;
+  }
   try {
     const user = await queryOne<{ id: number }>('SELECT id FROM users WHERE id = $1', [userId]);
     if (!user) { res.status(404).json({ error: 'User not found' }); return; }
-    await execute('UPDATE users SET force_password_reset = TRUE WHERE id = $1', [userId]);
+    const bcrypt = await import('bcryptjs');
+    const hash = bcrypt.hashSync(password, 10);
+    await execute(
+      'UPDATE users SET password_hash = $1, force_password_reset = TRUE WHERE id = $2',
+      [hash, userId]
+    );
     res.json({ success: true });
   } catch (err) {
     console.error(err);
