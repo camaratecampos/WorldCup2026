@@ -214,6 +214,10 @@ export function Bets() {
   const [renamingUserId, setRenamingUserId] = useState<number | null>(null);
   const [renameInput, setRenameInput] = useState('');
   const [renamingSaving, setRenamingSaving] = useState(false);
+  const [deletingUserId, setDeletingUserId] = useState<number | null>(null);
+  const [resetPassUserId, setResetPassUserId] = useState<number | null>(null);
+  const [resetPassInput, setResetPassInput] = useState('');
+  const [resetPassSaving, setResetPassSaving] = useState(false);
 
   const loadGames = useCallback(async () => {
     setLoading(true);
@@ -254,6 +258,35 @@ export function Bets() {
       showToast(err instanceof Error ? err.message : t('toast.nameError'), 'error');
     } finally {
       setRenamingSaving(false);
+    }
+  }
+
+  async function handleAdminDelete(userId: number) {
+    try {
+      await api.adminDeleteUser(userId);
+      setUsers(u => u.filter(x => x.id !== userId));
+      setDeletingUserId(null);
+      showToast('Utilizador apagado', 'success');
+    } catch (err: unknown) {
+      showToast(err instanceof Error ? err.message : 'Erro ao apagar', 'error');
+    }
+  }
+
+  async function handleAdminResetPass(userId: number) {
+    if (!resetPassInput.trim() || resetPassInput.trim().length < 6) {
+      showToast(t('toast.passwordMin'), 'error');
+      return;
+    }
+    setResetPassSaving(true);
+    try {
+      await api.adminResetPassword(userId, resetPassInput.trim());
+      showToast('Password alterada!', 'success');
+      setResetPassUserId(null);
+      setResetPassInput('');
+    } catch (err: unknown) {
+      showToast(err instanceof Error ? err.message : 'Erro ao alterar password', 'error');
+    } finally {
+      setResetPassSaving(false);
     }
   }
 
@@ -299,28 +332,57 @@ export function Bets() {
               <div className="text-orange-300 text-xs font-bold mb-2">{t('bets.admin.users')}</div>
               <div className="space-y-1.5">
                 {users.map((u) => (
-                  <div key={u.id} className="flex items-center gap-2">
-                    {renamingUserId === u.id ? (
-                      <>
+                  <div key={u.id} className="space-y-1">
+                    {/* Main row */}
+                    <div className="flex items-center gap-2">
+                      <div className="flex-1 min-w-0">
+                        <span className="text-white/80 text-xs font-medium">{u.username}</span>
+                        {u.phone && <span className="ml-2 text-white/40 text-xs">{u.phone}</span>}
+                      </div>
+                      <button onClick={() => { setRenamingUserId(renamingUserId === u.id ? null : u.id); setRenameInput(''); setResetPassUserId(null); setDeletingUserId(null); }}
+                        className="text-orange-400/60 hover:text-orange-300 text-xs transition-colors" title="Renomear">✏️</button>
+                      <button onClick={() => { setResetPassUserId(resetPassUserId === u.id ? null : u.id); setResetPassInput(''); setRenamingUserId(null); setDeletingUserId(null); }}
+                        className="text-orange-400/60 hover:text-orange-300 text-xs transition-colors" title="Reset password">🔑</button>
+                      {u.username !== 'admin' && (
+                        <button onClick={() => { setDeletingUserId(deletingUserId === u.id ? null : u.id); setRenamingUserId(null); setResetPassUserId(null); }}
+                          className="text-red-400/60 hover:text-red-400 text-xs transition-colors" title="Apagar">🗑️</button>
+                      )}
+                    </div>
+
+                    {/* Inline rename */}
+                    {renamingUserId === u.id && (
+                      <div className="flex items-center gap-2 pl-2">
                         <input type="text" value={renameInput} onChange={(e) => setRenameInput(e.target.value)}
                           onKeyDown={(e) => e.key === 'Enter' && handleAdminRename(u.id)}
                           className="flex-1 bg-primary-dark border border-orange-500/40 rounded-lg px-2 py-1 text-white text-xs focus:outline-none focus:border-orange-400"
                           placeholder={u.username} autoFocus />
                         <button onClick={() => handleAdminRename(u.id)} disabled={renamingSaving}
-                          className="text-orange-300 text-xs font-black disabled:opacity-50">
-                          {renamingSaving ? '...' : 'OK'}
-                        </button>
+                          className="text-orange-300 text-xs font-black disabled:opacity-50">{renamingSaving ? '...' : 'OK'}</button>
                         <button onClick={() => setRenamingUserId(null)} className="text-white/40 text-xs">✕</button>
-                      </>
-                    ) : (
-                      <>
-                        <div className="flex-1 min-w-0">
-                          <span className="text-white/80 text-xs font-medium">{u.username}</span>
-                          {u.phone && <span className="ml-2 text-white/40 text-xs">{u.phone}</span>}
-                        </div>
-                        <button onClick={() => { setRenamingUserId(u.id); setRenameInput(''); }}
-                          className="text-orange-400/60 hover:text-orange-300 text-xs transition-colors">✏️</button>
-                      </>
+                      </div>
+                    )}
+
+                    {/* Inline reset password */}
+                    {resetPassUserId === u.id && (
+                      <div className="flex items-center gap-2 pl-2">
+                        <input type="password" value={resetPassInput} onChange={(e) => setResetPassInput(e.target.value)}
+                          onKeyDown={(e) => e.key === 'Enter' && handleAdminResetPass(u.id)}
+                          className="flex-1 bg-primary-dark border border-orange-500/40 rounded-lg px-2 py-1 text-white text-xs focus:outline-none focus:border-orange-400"
+                          placeholder={t('bets.admin.resetPass')} autoFocus />
+                        <button onClick={() => handleAdminResetPass(u.id)} disabled={resetPassSaving}
+                          className="text-orange-300 text-xs font-black disabled:opacity-50">{resetPassSaving ? '...' : t('bets.admin.resetPassSave')}</button>
+                        <button onClick={() => setResetPassUserId(null)} className="text-white/40 text-xs">✕</button>
+                      </div>
+                    )}
+
+                    {/* Inline delete confirmation */}
+                    {deletingUserId === u.id && (
+                      <div className="flex items-center gap-2 pl-2">
+                        <span className="text-red-400 text-xs flex-1">{t('bets.admin.deleteConfirm')} <strong>{u.username}</strong>?</span>
+                        <button onClick={() => handleAdminDelete(u.id)}
+                          className="text-red-400 text-xs font-black hover:text-red-300">Sim</button>
+                        <button onClick={() => setDeletingUserId(null)} className="text-white/40 text-xs">Não</button>
+                      </div>
                     )}
                   </div>
                 ))}

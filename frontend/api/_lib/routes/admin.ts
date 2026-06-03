@@ -118,4 +118,43 @@ router.put('/users/:userId/username', authMiddleware, async (req: AuthRequest, r
   }
 });
 
+// DELETE /api/admin/users/:userId - delete user and all their bets
+router.delete('/users/:userId', authMiddleware, async (req: AuthRequest, res: Response): Promise<void> => {
+  if (!requireAdmin(req, res)) return;
+  const userId = parseInt(req.params.userId, 10);
+  try {
+    const user = await queryOne<{ username: string }>('SELECT username FROM users WHERE id = $1', [userId]);
+    if (!user) { res.status(404).json({ error: 'User not found' }); return; }
+    if (user.username === 'admin') { res.status(400).json({ error: 'Cannot delete admin' }); return; }
+    await execute('DELETE FROM bets WHERE user_id = $1', [userId]);
+    await execute('DELETE FROM users WHERE id = $1', [userId]);
+    res.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// PUT /api/admin/users/:userId/password - reset a user's password
+router.put('/users/:userId/password', authMiddleware, async (req: AuthRequest, res: Response): Promise<void> => {
+  if (!requireAdmin(req, res)) return;
+  const userId = parseInt(req.params.userId, 10);
+  const { password } = req.body;
+  if (!password || typeof password !== 'string' || password.length < 6) {
+    res.status(400).json({ error: 'Password must be at least 6 characters' });
+    return;
+  }
+  try {
+    const user = await queryOne<{ id: number }>('SELECT id FROM users WHERE id = $1', [userId]);
+    if (!user) { res.status(404).json({ error: 'User not found' }); return; }
+    const bcrypt = await import('bcryptjs');
+    const hash = bcrypt.hashSync(password, 10);
+    await execute('UPDATE users SET password_hash = $1 WHERE id = $2', [hash, userId]);
+    res.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 export default router;
