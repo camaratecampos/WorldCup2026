@@ -26,8 +26,8 @@ app.use('/api/groups', groupsRouter);
 
 app.get('/api/me', authMiddleware, async (req: AuthRequest, res: Response): Promise<void> => {
   try {
-    const user = await queryOne<{ id: number; username: string; team_pick: string | null; created_at: string; phone: string | null }>(
-      'SELECT id, username, team_pick, created_at, phone FROM users WHERE id = $1',
+    const user = await queryOne<{ id: number; username: string; team_pick: string | null; created_at: string; phone: string | null; force_password_reset: boolean }>(
+      'SELECT id, username, team_pick, created_at, phone, force_password_reset FROM users WHERE id = $1',
       [req.user!.userId]
     );
     if (!user) { res.status(404).json({ error: 'User not found' }); return; }
@@ -38,7 +38,29 @@ app.get('/api/me', authMiddleware, async (req: AuthRequest, res: Response): Prom
       createdAt: user.created_at,
       isAdmin: user.username === 'admin',
       phone: user.phone,
+      forceReset: user.force_password_reset ?? false,
     });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// PUT /api/me/password - user sets a new password (clears force_password_reset flag)
+app.put('/api/me/password', authMiddleware, async (req: AuthRequest, res: Response): Promise<void> => {
+  const { password } = req.body;
+  if (!password || typeof password !== 'string' || password.length < 6) {
+    res.status(400).json({ error: 'Password must be at least 6 characters' });
+    return;
+  }
+  try {
+    const bcrypt = await import('bcryptjs');
+    const hash = bcrypt.hashSync(password, 10);
+    await execute(
+      'UPDATE users SET password_hash = $1, force_password_reset = FALSE WHERE id = $2',
+      [hash, req.user!.userId]
+    );
+    res.json({ success: true });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Internal server error' });

@@ -82,8 +82,8 @@ const pt = {
   'bets.admin.updateResult': 'Actualizar Resultado',
   'bets.admin.users': 'Utilizadores',
   'bets.admin.deleteConfirm': 'Apagar?',
-  'bets.admin.resetPass': 'Nova password',
-  'bets.admin.resetPassSave': 'Guardar',
+  'bets.admin.resetPass': 'Forçar reset de password para',
+  'bets.admin.resetPassSave': 'Sim',
   'bets.phase.group': 'Grupo {name}',
   'bets.phase.r32': 'Dezasseis avos',
   'bets.phase.r16': 'Oitavos de Final',
@@ -167,6 +167,13 @@ const pt = {
   'rules.phase.3rd': '3º e 4º Lugar',
   'rules.phase.final': 'Final',
   'rules.phase.games': 'jogos',
+
+  // Password reset gate
+  'passReset.title': 'Escolhe uma Nova Password',
+  'passReset.desc': 'O admin pediu que alterasses a tua password antes de continuar.',
+  'passReset.confirm': 'Guardar Password',
+  'passReset.success': 'Password alterada!',
+  'passReset.error': 'Erro ao alterar password',
 
   // Predictions panel
   'predictions.show': 'Ver previsões',
@@ -280,8 +287,8 @@ const en: typeof pt = {
   'bets.admin.updateResult': 'Update Result',
   'bets.admin.users': 'Users',
   'bets.admin.deleteConfirm': 'Delete?',
-  'bets.admin.resetPass': 'New password',
-  'bets.admin.resetPassSave': 'Save',
+  'bets.admin.resetPass': 'Force password reset for',
+  'bets.admin.resetPassSave': 'Yes',
   'bets.phase.group': 'Group {name}',
   'bets.phase.r32': 'Round of 32',
   'bets.phase.r16': 'Round of 16',
@@ -365,6 +372,13 @@ const en: typeof pt = {
   'rules.phase.3rd': '3rd & 4th Place',
   'rules.phase.final': 'Final',
   'rules.phase.games': 'games',
+
+  // Password reset gate
+  'passReset.title': 'Choose a New Password',
+  'passReset.desc': 'The admin has asked you to set a new password before continuing.',
+  'passReset.confirm': 'Save Password',
+  'passReset.success': 'Password changed!',
+  'passReset.error': 'Error changing password',
 
   // Predictions panel
   'predictions.show': 'Show predictions',

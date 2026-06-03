@@ -7,6 +7,7 @@ export interface User {
   createdAt: string;
   isAdmin: boolean;
   phone: string | null;
+  forceReset: boolean;
 }
 
 export interface Game {

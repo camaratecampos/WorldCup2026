@@ -43,7 +43,13 @@ export const api = {
     }),
 
   // User
-  getMe: () => request<{ id: number; username: string; teamPick: string | null; isAdmin: boolean; phone: string | null }>('/me'),
+  getMe: () => request<{ id: number; username: string; teamPick: string | null; isAdmin: boolean; phone: string | null; forceReset: boolean }>('/me'),
+
+  changeMyPassword: (password: string) =>
+    request<{ success: boolean }>('/me/password', {
+      method: 'PUT',
+      body: JSON.stringify({ password }),
+    }),
 
   renameMe: (username: string) =>
     request<{ token: string; username: string }>('/me/username', {
@@ -114,11 +120,8 @@ export const api = {
   adminDeleteUser: (userId: number) =>
     request<{ success: boolean }>(`/admin/users/${userId}`, { method: 'DELETE' }),
 
-  adminResetPassword: (userId: number, password: string) =>
-    request<{ success: boolean }>(`/admin/users/${userId}/password`, {
-      method: 'PUT',
-      body: JSON.stringify({ password }),
-    }),
+  adminResetPassword: (userId: number) =>
+    request<{ success: boolean }>(`/admin/users/${userId}/password`, { method: 'PUT' }),
 };
 
 export default api;

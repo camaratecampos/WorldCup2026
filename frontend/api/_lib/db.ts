@@ -78,6 +78,7 @@ export async function initDb(): Promise<void> {
 
   // Migrations — schema-qualified so they work regardless of search_path
   await pool.query(`ALTER TABLE ${s}users ADD COLUMN IF NOT EXISTS phone TEXT;`).catch(() => {});
+  await pool.query(`ALTER TABLE ${s}users ADD COLUMN IF NOT EXISTS force_password_reset BOOLEAN NOT NULL DEFAULT FALSE;`).catch(() => {});
   await pool.query(`ALTER TABLE ${s}games ADD COLUMN IF NOT EXISTS espn_id TEXT;`).catch(() => {});
   await pool.query(`ALTER TABLE ${s}games ADD COLUMN IF NOT EXISTS venue TEXT NOT NULL DEFAULT '';`).catch(() => {});
   await pool.query(

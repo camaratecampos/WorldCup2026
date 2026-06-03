@@ -7,6 +7,7 @@ interface User {
   teamPick: string | null;
   isAdmin: boolean;
   phone: string | null;
+  forceReset: boolean;
 }
 
 interface AuthContextType {
