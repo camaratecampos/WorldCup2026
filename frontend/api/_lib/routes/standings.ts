@@ -86,7 +86,6 @@ router.get('/', async (req: Request, res: Response): Promise<void> => {
              g.phase, g.home_score as actual_home, g.away_score as actual_away, g.status
       FROM bets b
       JOIN games g ON b.game_id = g.id
-      WHERE g.status = 'finished'
     `);
 
     // Group bets by user
@@ -103,7 +102,8 @@ router.get('/', async (req: Request, res: Response): Promise<void> => {
       let gamesWithPoints = 0;
 
       for (const bet of userBets) {
-        if (bet.actual_home != null && bet.actual_away != null) {
+        gamesBet++;
+        if (bet.status === 'finished' && bet.actual_home != null && bet.actual_away != null) {
           const pts = calculateBetPoints(
             bet.phase,
             bet.home_score,
@@ -112,7 +112,6 @@ router.get('/', async (req: Request, res: Response): Promise<void> => {
             bet.actual_away
           );
           betPoints += pts;
-          gamesBet++;
           if (pts > 0) gamesWithPoints++;
         }
       }
