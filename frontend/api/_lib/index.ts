@@ -118,7 +118,7 @@ app.post('/api/team-pick', authMiddleware, async (req: AuthRequest, res: Respons
   if (!team) { res.status(400).json({ error: 'Team is required' }); return; }
 
   const now = new Date();
-  const tournamentStart = new Date('2026-06-11T00:00:00');
+  const tournamentStart = new Date('2026-06-11T19:00:00Z');
   if (now >= tournamentStart) {
     res.status(400).json({ error: 'Tournament has already started. Team pick is locked.' });
     return;
