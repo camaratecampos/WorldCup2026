@@ -8,9 +8,7 @@ import { allTeams } from '../../utils/flags';
 import { Flag } from '../ui/Flag';
 import { LoadingSpinner } from '../ui/LoadingSpinner';
 import { showToast } from '../ui/Toast';
-
-// Opening game: Mexico vs South Africa, June 11 2026 at 20:00 Portugal time (19:00 UTC)
-const TOURNAMENT_START = new Date('2026-06-11T19:00:00Z');
+import { TOURNAMENT_START } from '../../../shared/tournament';
 
 function formatDate(dateStr: string): string {
   return new Date(dateStr).toLocaleDateString('pt-PT', {

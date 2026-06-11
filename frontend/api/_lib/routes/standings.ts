@@ -31,49 +31,30 @@ interface GameRow {
   status: string;
 }
 
-async function computeTeamPickBonus(teamPick: string | null): Promise<number> {
-  if (!teamPick) return 0;
+// Build a team → bonus lookup in one pass so standings doesn't query per user
+async function computeTeamPickBonusMap(): Promise<Map<string, number>> {
+  const bonus = new Map<string, number>();
 
-  // Check if team won the final
-  const finalGames = await query<GameRow>(
-    "SELECT * FROM games WHERE phase = 'final' AND status = 'finished'"
-  );
-  const finalGame = finalGames[0];
-
-  if (finalGame && finalGame.home_score != null && finalGame.away_score != null) {
-    const finalTrend = getTrend(finalGame.home_score, finalGame.away_score);
-    const winner = finalTrend === 'H' ? finalGame.home_team : finalTrend === 'A' ? finalGame.away_team : null;
-    const loser = finalTrend === 'H' ? finalGame.away_team : finalTrend === 'A' ? finalGame.home_team : null;
-
-    if (winner === teamPick) return calculateTeamPickPoints('winner');
-    if (loser === teamPick) return calculateTeamPickPoints('final_lost');
-  }
-
-  // Check if team lost in semi-finals
-  const sfGames = await query<GameRow>(
-    "SELECT * FROM games WHERE phase = 'sf' AND status = 'finished'"
+  const knockoutGames = await query<GameRow>(
+    "SELECT * FROM games WHERE phase IN ('sf', 'final') AND status = 'finished'"
   );
 
-  for (const sf of sfGames) {
-    if (sf.home_score != null && sf.away_score != null) {
-      const trend = getTrend(sf.home_score, sf.away_score);
-      const loser = trend === 'H' ? sf.away_team : trend === 'A' ? sf.home_team : null;
-      if (loser === teamPick) return calculateTeamPickPoints('semi_lost');
+  for (const game of knockoutGames) {
+    if (game.home_score == null || game.away_score == null) continue;
+    const trend = getTrend(game.home_score, game.away_score);
+    if (trend === 'D') continue; // knockout games can't end in a draw (penalties decide)
+    const winner = trend === 'H' ? game.home_team : game.away_team;
+    const loser = trend === 'H' ? game.away_team : game.home_team;
+
+    if (game.phase === 'final') {
+      bonus.set(winner, calculateTeamPickPoints('winner'));
+      bonus.set(loser, calculateTeamPickPoints('final_lost'));
+    } else {
+      bonus.set(loser, calculateTeamPickPoints('semi_lost'));
     }
   }
 
-  // Check if team is still in the tournament (in final or sf but not finished)
-  const sfActive = await query<GameRow>(
-    "SELECT * FROM games WHERE phase IN ('sf', 'final') AND (home_team = $1 OR away_team = $2)",
-    [teamPick, teamPick]
-  );
-
-  if (sfActive.length > 0) {
-    // Team reached semi or final - partial points not awarded yet
-    return 0;
-  }
-
-  return 0;
+  return bonus;
 }
 
 // GET /api/standings - participant leaderboard
@@ -95,7 +76,9 @@ router.get('/', async (req: Request, res: Response): Promise<void> => {
       betsByUser[bet.user_id].push(bet);
     }
 
-    const standingsPromises = users.map(async (user) => {
+    const bonusMap = await computeTeamPickBonusMap();
+
+    const standings = users.map((user) => {
       const userBets = betsByUser[user.id] || [];
       let betPoints = 0;
       let gamesBet = 0;
@@ -116,7 +99,7 @@ router.get('/', async (req: Request, res: Response): Promise<void> => {
         }
       }
 
-      const teamPickBonus = await computeTeamPickBonus(user.team_pick);
+      const teamPickBonus = user.team_pick ? (bonusMap.get(user.team_pick) ?? 0) : 0;
       const totalPoints = betPoints + teamPickBonus;
 
       return {
@@ -131,7 +114,6 @@ router.get('/', async (req: Request, res: Response): Promise<void> => {
       };
     });
 
-    const standings = await Promise.all(standingsPromises);
     standings.sort((a, b) => b.totalPoints - a.totalPoints);
 
     // Add rank

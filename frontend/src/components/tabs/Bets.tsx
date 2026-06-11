@@ -266,25 +266,25 @@ export function Bets() {
       await api.adminDeleteUser(userId);
       setUsers(u => u.filter(x => x.id !== userId));
       setDeletingUserId(null);
-      showToast('Utilizador apagado', 'success');
+      showToast(t('toast.userDeleted'), 'success');
     } catch (err: unknown) {
-      showToast(err instanceof Error ? err.message : 'Erro ao apagar', 'error');
+      showToast(err instanceof Error ? err.message : t('toast.userDeleteError'), 'error');
     }
   }
 
   async function handleAdminResetPass(userId: number) {
     if (resetPassInput.trim().length < 4) {
-      showToast('Password temporária deve ter pelo menos 4 caracteres', 'error');
+      showToast(t('toast.tempPassMin'), 'error');
       return;
     }
     setResetPassSaving(true);
     try {
       await api.adminResetPassword(userId, resetPassInput.trim());
-      showToast('Password temporária definida — utilizador terá que alterar no próximo login', 'success');
+      showToast(t('toast.tempPassSet'), 'success');
       setResetPassUserId(null);
       setResetPassInput('');
     } catch (err: unknown) {
-      showToast(err instanceof Error ? err.message : 'Erro ao resetar password', 'error');
+      showToast(err instanceof Error ? err.message : t('toast.tempPassError'), 'error');
     } finally {
       setResetPassSaving(false);
     }
@@ -371,7 +371,7 @@ export function Bets() {
                           onChange={(e) => setResetPassInput(e.target.value)}
                           onKeyDown={(e) => e.key === 'Enter' && handleAdminResetPass(u.id)}
                           className="flex-1 bg-primary-dark border border-orange-500/40 rounded-lg px-2 py-1 text-white text-xs focus:outline-none focus:border-orange-400"
-                          placeholder="Password temporária"
+                          placeholder={t('bets.admin.tempPassPlaceholder')}
                           autoFocus
                         />
                         <button onClick={() => handleAdminResetPass(u.id)} disabled={resetPassSaving}
@@ -385,8 +385,8 @@ export function Bets() {
                       <div className="flex items-center gap-2 pl-2">
                         <span className="text-red-400 text-xs flex-1">{t('bets.admin.deleteConfirm')} <strong>{u.username}</strong>?</span>
                         <button onClick={() => handleAdminDelete(u.id)}
-                          className="text-red-400 text-xs font-black hover:text-red-300">Sim</button>
-                        <button onClick={() => setDeletingUserId(null)} className="text-white/40 text-xs">Não</button>
+                          className="text-red-400 text-xs font-black hover:text-red-300">{t('bets.admin.yes')}</button>
+                        <button onClick={() => setDeletingUserId(null)} className="text-white/40 text-xs">{t('bets.admin.no')}</button>
                       </div>
                     )}
                   </div>

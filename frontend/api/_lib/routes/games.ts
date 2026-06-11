@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { query, queryOne, execute } from '../db';
+import { query, queryOne } from '../db';
 import { authMiddleware, AuthRequest } from '../auth';
 
 const router = Router();
@@ -50,31 +50,6 @@ router.get('/me', authMiddleware, async (req: AuthRequest, res: Response): Promi
       createdAt: user.created_at,
       isAdmin: user.username === 'admin',
     });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Internal server error' });
-  }
-});
-
-// POST /api/games/team-pick - set team pick (only before tournament starts Jun 11)
-router.post('/team-pick', authMiddleware, async (req: AuthRequest, res: Response): Promise<void> => {
-  const { team } = req.body;
-
-  if (!team) {
-    res.status(400).json({ error: 'Team is required' });
-    return;
-  }
-
-  const now = new Date();
-  const tournamentStart = new Date('2026-06-11T00:00:00');
-  if (now >= tournamentStart) {
-    res.status(400).json({ error: 'Tournament has already started. Team pick is locked.' });
-    return;
-  }
-
-  try {
-    await execute('UPDATE users SET team_pick = $1 WHERE id = $2', [team, req.user!.userId]);
-    res.json({ success: true, team });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Internal server error' });

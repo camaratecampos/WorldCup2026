@@ -10,6 +10,7 @@ import resultsRouter from './routes/results';
 import groupsRouter from './routes/groups';
 import { authMiddleware, AuthRequest, signToken } from './auth';
 import { Response } from 'express';
+import { TOURNAMENT_START } from '../../shared/tournament';
 
 const app = express();
 
@@ -118,8 +119,7 @@ app.post('/api/team-pick', authMiddleware, async (req: AuthRequest, res: Respons
   if (!team) { res.status(400).json({ error: 'Team is required' }); return; }
 
   const now = new Date();
-  const tournamentStart = new Date('2026-06-11T19:00:00Z');
-  if (now >= tournamentStart) {
+  if (now >= TOURNAMENT_START) {
     res.status(400).json({ error: 'Tournament has already started. Team pick is locked.' });
     return;
   }

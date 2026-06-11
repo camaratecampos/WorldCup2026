@@ -22,6 +22,7 @@ export function Rules() {
     { phaseKey: 'rules.phase.r16', trend: 8, exact: 2 },
     { phaseKey: 'rules.phase.qf', trend: 10, exact: 2 },
     { phaseKey: 'rules.phase.sf', trend: 13, exact: 2 },
+    { phaseKey: 'rules.phase.3rd', trend: 13, exact: 2 },
     { phaseKey: 'rules.phase.final', trend: 15, exact: 2 },
   ] as const;
 

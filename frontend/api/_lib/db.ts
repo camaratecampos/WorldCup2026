@@ -45,6 +45,19 @@ export async function initDb(): Promise<void> {
   // Prefix for schema-qualified DDL; runtime queries rely on search_path via connection string
   const s = schema && schema !== 'public' ? `"${schema}".` : '';
 
+  // Fast path: if the most recently added columns exist, the schema is up to date
+  // and we can skip all DDL on this cold start. IMPORTANT: when adding a new
+  // migration below, reference its column here so the fast path stays accurate.
+  try {
+    await pool.query(
+      `SELECT u.force_password_reset, u.phone, g.espn_id, g.venue, b.id
+       FROM ${s}users u, ${s}games g, ${s}bets b LIMIT 0`
+    );
+    return;
+  } catch {
+    // Schema missing or outdated — run full init below
+  }
+
   if (schema && schema !== 'public') {
     await pool.query(`CREATE SCHEMA IF NOT EXISTS "${schema}"`);
   }
@@ -56,6 +69,7 @@ export async function initDb(): Promise<void> {
       password_hash TEXT NOT NULL,
       phone TEXT,
       team_pick TEXT,
+      force_password_reset BOOLEAN NOT NULL DEFAULT FALSE,
       created_at TIMESTAMPTZ DEFAULT NOW()
     );
   `);

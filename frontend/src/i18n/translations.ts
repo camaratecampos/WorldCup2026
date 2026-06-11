@@ -82,8 +82,9 @@ const pt = {
   'bets.admin.updateResult': 'Actualizar Resultado',
   'bets.admin.users': 'Utilizadores',
   'bets.admin.deleteConfirm': 'Apagar?',
-  'bets.admin.resetPass': 'Forçar reset de password para',
-  'bets.admin.resetPassSave': 'Sim',
+  'bets.admin.tempPassPlaceholder': 'Password temporária',
+  'bets.admin.yes': 'Sim',
+  'bets.admin.no': 'Não',
   'bets.phase.group': 'Grupo {name}',
   'bets.phase.r32': 'Dezasseis avos',
   'bets.phase.r16': 'Oitavos de Final',
@@ -203,6 +204,11 @@ const pt = {
   'toast.phoneSaved': 'Telemóvel guardado!',
   'toast.phoneError': 'Erro ao guardar telemóvel',
   'toast.phoneInvalid': 'Insere um número de telemóvel válido',
+  'toast.userDeleted': 'Utilizador apagado',
+  'toast.userDeleteError': 'Erro ao apagar utilizador',
+  'toast.tempPassSet': 'Password temporária definida — o utilizador terá que escolher uma nova no próximo login',
+  'toast.tempPassError': 'Erro ao definir password temporária',
+  'toast.tempPassMin': 'Password temporária deve ter pelo menos 4 caracteres',
 };
 
 const en: typeof pt = {
@@ -287,8 +293,9 @@ const en: typeof pt = {
   'bets.admin.updateResult': 'Update Result',
   'bets.admin.users': 'Users',
   'bets.admin.deleteConfirm': 'Delete?',
-  'bets.admin.resetPass': 'Force password reset for',
-  'bets.admin.resetPassSave': 'Yes',
+  'bets.admin.tempPassPlaceholder': 'Temporary password',
+  'bets.admin.yes': 'Yes',
+  'bets.admin.no': 'No',
   'bets.phase.group': 'Group {name}',
   'bets.phase.r32': 'Round of 32',
   'bets.phase.r16': 'Round of 16',
@@ -408,6 +415,11 @@ const en: typeof pt = {
   'toast.phoneSaved': 'Phone number saved!',
   'toast.phoneError': 'Error saving phone number',
   'toast.phoneInvalid': 'Please enter a valid phone number',
+  'toast.userDeleted': 'User deleted',
+  'toast.userDeleteError': 'Error deleting user',
+  'toast.tempPassSet': 'Temporary password set — the user must choose a new one on next login',
+  'toast.tempPassError': 'Error setting temporary password',
+  'toast.tempPassMin': 'Temporary password must be at least 4 characters',
 };
 
 export const translations: Record<Language, typeof pt> = { pt, en };
