@@ -8,6 +8,7 @@ import standingsRouter from './routes/standings';
 import adminRouter from './routes/admin';
 import resultsRouter from './routes/results';
 import groupsRouter from './routes/groups';
+import cronRouter from './routes/cron';
 import { authMiddleware, AuthRequest, signToken } from './auth';
 import { Response } from 'express';
 import { TOURNAMENT_START } from '../../shared/tournament';
@@ -24,6 +25,7 @@ app.use('/api/standings', standingsRouter);
 app.use('/api/admin', adminRouter);
 app.use('/api/results', resultsRouter);
 app.use('/api/groups', groupsRouter);
+app.use('/api/cron', cronRouter);
 
 app.get('/api/me', authMiddleware, async (req: AuthRequest, res: Response): Promise<void> => {
   try {

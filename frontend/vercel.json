@@ -1,4 +1,7 @@
 {
+  "crons": [
+    { "path": "/api/cron/sync", "schedule": "*/30 * * * *" }
+  ],
   "rewrites": [
     { "source": "/api/:path*", "destination": "/api/index" }
   ]
