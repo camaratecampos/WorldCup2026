@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import api from '../../api';
 import { Game, Bet } from '../../types';
 import { LoadingSpinner } from '../ui/LoadingSpinner';
@@ -210,6 +210,7 @@ export function Bets() {
   const [dates, setDates] = useState<string[]>([]);
   const [adminMode, setAdminMode] = useState(false);
   const [syncing, setSyncing] = useState(false);
+  const dateScrollRef = useRef<HTMLDivElement>(null);
   const [users, setUsers] = useState<{ id: number; username: string; phone: string | null }[]>([]);
   const [renamingUserId, setRenamingUserId] = useState<number | null>(null);
   const [renameInput, setRenameInput] = useState('');
@@ -244,6 +245,12 @@ export function Bets() {
       api.adminGetUsers().then(setUsers).catch(() => {});
     }
   }, [adminMode]);
+
+  useEffect(() => {
+    if (!dateScrollRef.current || !selectedDate) return;
+    const active = dateScrollRef.current.querySelector<HTMLElement>('[data-active="true"]');
+    if (active) active.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' });
+  }, [selectedDate]);
 
   async function handleAdminRename(userId: number) {
     if (!renameInput.trim()) return;
@@ -399,9 +406,10 @@ export function Bets() {
 
       {/* Date selector */}
       <div className="overflow-x-auto -mx-4 px-4">
-        <div className="flex gap-2 pb-1" style={{ minWidth: 'max-content' }}>
+        <div ref={dateScrollRef} className="flex gap-2 pb-1" style={{ minWidth: 'max-content' }}>
           {dates.map((d) => (
             <button key={d} onClick={() => setSelectedDate(d)}
+              data-active={selectedDate === d ? 'true' : 'false'}
               className={`px-3 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-colors ${selectedDate === d ? 'bg-gold text-primary-dark' : 'bg-white/10 text-white/70 hover:bg-white/20'}`}>
               {formatDateLabel(d + 'T12:00:00')}
             </button>
