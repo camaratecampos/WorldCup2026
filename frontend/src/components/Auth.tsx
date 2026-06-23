@@ -74,25 +74,27 @@ export function Auth() {
 
         {/* Glass card */}
         <div className="bg-white/10 backdrop-blur-2xl rounded-3xl p-6 border border-white/20 shadow-2xl shadow-black/50">
-          {/* Tabs */}
-          <div className="flex rounded-xl bg-black/30 p-1 mb-6">
-            <button
-              onClick={() => setTab('login')}
-              className={`flex-1 py-2.5 rounded-lg text-sm font-bold transition-all ${
-                tab === 'login' ? 'bg-gold text-primary-dark shadow-lg' : 'text-white/50 hover:text-white'
-              }`}
-            >
-              {t('auth.login')}
-            </button>
-            <button
-              onClick={() => setTab('register')}
-              className={`flex-1 py-2.5 rounded-lg text-sm font-bold transition-all ${
-                tab === 'register' ? 'bg-gold text-primary-dark shadow-lg' : 'text-white/50 hover:text-white'
-              }`}
-            >
-              {t('auth.register')}
-            </button>
-          </div>
+          {/* Tabs — register tab hidden when allowRegistration is false */}
+          {theme.allowRegistration && (
+            <div className="flex rounded-xl bg-black/30 p-1 mb-6">
+              <button
+                onClick={() => setTab('login')}
+                className={`flex-1 py-2.5 rounded-lg text-sm font-bold transition-all ${
+                  tab === 'login' ? 'bg-gold text-primary-dark shadow-lg' : 'text-white/50 hover:text-white'
+                }`}
+              >
+                {t('auth.login')}
+              </button>
+              <button
+                onClick={() => setTab('register')}
+                className={`flex-1 py-2.5 rounded-lg text-sm font-bold transition-all ${
+                  tab === 'register' ? 'bg-gold text-primary-dark shadow-lg' : 'text-white/50 hover:text-white'
+                }`}
+              >
+                {t('auth.register')}
+              </button>
+            </div>
+          )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>

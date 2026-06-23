@@ -12,6 +12,7 @@ export interface AppTheme {
   authPhoto: string | null;
   multiLang: boolean;         // show EN/PT language toggle
   requirePhone: boolean;      // block login until phone is on file
+  allowRegistration: boolean; // show register tab on auth screen
 }
 
 const hikma: AppTheme = {
@@ -25,6 +26,7 @@ const hikma: AppTheme = {
   authPhoto: '/hikma-cleanroom.png',
   multiLang: true,
   requirePhone: true,
+  allowRegistration: false,
 };
 
 const family: AppTheme = {
@@ -38,6 +40,7 @@ const family: AppTheme = {
   authPhoto: null,
   multiLang: false,
   requirePhone: false,
+  allowRegistration: true,
 };
 
 const themeId = import.meta.env.VITE_APP_THEME === 'family' ? 'family' : 'hikma';
