@@ -6,14 +6,6 @@ import { signToken } from '../auth';
 const router = Router();
 
 router.post('/register', async (req: Request, res: Response): Promise<void> => {
-  // Registration is only open for the family deployment (DB_SCHEMA=family).
-  // The hikma deployment locks new sign-ups after the initial setup.
-  const registrationOpen = process.env.DB_SCHEMA === 'family';
-  if (!registrationOpen) {
-    res.status(403).json({ error: 'Registration is closed' });
-    return;
-  }
-
   const { username, password, phone } = req.body;
 
   if (!username || !password) {

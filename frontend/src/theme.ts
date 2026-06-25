@@ -26,7 +26,7 @@ const hikma: AppTheme = {
   authPhoto: '/hikma-cleanroom.png',
   multiLang: true,
   requirePhone: true,
-  allowRegistration: false,
+  allowRegistration: true,
 };
 
 const family: AppTheme = {
