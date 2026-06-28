@@ -180,6 +180,7 @@ const pt = {
   'predictions.show': 'Ver previsões',
   'predictions.hide': 'Ocultar',
   'predictions.empty': 'Sem previsões ainda',
+  'predictions.locked': 'Previsões visíveis após o início do jogo',
 
   // Toast / errors
   'toast.betSaved': 'Previsão guardada!',
@@ -391,6 +392,7 @@ const en: typeof pt = {
   'predictions.show': 'Show predictions',
   'predictions.hide': 'Hide',
   'predictions.empty': 'No predictions yet',
+  'predictions.locked': 'Predictions visible after kickoff',
 
   // Toast / errors
   'toast.betSaved': 'Prediction saved!',

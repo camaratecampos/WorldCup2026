@@ -13,13 +13,27 @@ interface Props {
   actualHome?: number | null;
   actualAway?: number | null;
   finished?: boolean;
+  /** Whether the game has kicked off — predictions stay hidden until it has */
+  started?: boolean;
 }
 
-export function PredictionsPanel({ gameId, actualHome, actualAway, finished }: Props) {
+export function PredictionsPanel({ gameId, actualHome, actualAway, finished, started = true }: Props) {
   const { t } = useLang();
   const [open, setOpen] = useState(false);
   const [predictions, setPredictions] = useState<GamePrediction[] | null>(null);
   const [loading, setLoading] = useState(false);
+
+  // Before kickoff, other players' predictions are hidden so nobody can copy.
+  if (!started) {
+    return (
+      <div className="mt-3 pt-2.5 border-t border-white/10">
+        <div className="flex items-center gap-1.5 text-white/30 text-xs">
+          <span>🔒</span>
+          <span>{t('predictions.locked')}</span>
+        </div>
+      </div>
+    );
+  }
 
   const toggle = async () => {
     if (!open && predictions === null) {

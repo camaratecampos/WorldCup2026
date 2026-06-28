@@ -139,12 +139,13 @@ function GameCard({ game, bet, onBetPlaced }: GameCardProps) {
         </button>
       )}
 
-      {/* Others' predictions — always visible */}
+      {/* Others' predictions — hidden until the game has kicked off */}
       <PredictionsPanel
         gameId={game.id}
         actualHome={game.home_score}
         actualAway={game.away_score}
         finished={game.status === 'finished'}
+        started={now >= matchDate}
       />
     </div>
   );

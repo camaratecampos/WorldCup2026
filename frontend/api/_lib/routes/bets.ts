@@ -81,11 +81,24 @@ router.get('/my', authMiddleware, async (req: AuthRequest, res: Response): Promi
   }
 });
 
-// GET /api/bets/game/:gameId - all participants' predictions for a game
+// GET /api/bets/game/:gameId - all participants' predictions for a game.
+// Other players' predictions stay hidden until the game has kicked off, so
+// nobody can copy picks beforehand.
 router.get('/game/:gameId', authMiddleware, async (req: AuthRequest, res: Response): Promise<void> => {
   const gameId = parseInt(req.params.gameId);
   if (isNaN(gameId)) { res.status(400).json({ error: 'Invalid game id' }); return; }
   try {
+    const game = await queryOne<{ match_date: string }>(
+      'SELECT match_date FROM games WHERE id = $1',
+      [gameId]
+    );
+    if (!game) { res.status(404).json({ error: 'Game not found' }); return; }
+
+    if (new Date() < new Date(game.match_date)) {
+      res.status(403).json({ error: 'Predictions are hidden until kickoff' });
+      return;
+    }
+
     const predictions = await query<{ username: string; home_score: number; away_score: number }>(
       `SELECT u.username, b.home_score, b.away_score
        FROM bets b JOIN users u ON u.id = b.user_id
