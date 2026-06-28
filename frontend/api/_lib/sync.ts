@@ -85,8 +85,9 @@ function normalizeTeam(name: string): string {
   return TEAM_MAP[name] || name;
 }
 
-function getPhase(noteText: string, matchDate: Date): string {
+function getPhase(noteText: string, matchDate: Date, homeTeam?: string, awayTeam?: string): string {
   const n = noteText.toLowerCase();
+  // 1. Trust ESPN's official round labels when present
   if (n.includes('group')) return 'group';
   if (n.includes('round of 32') || n.includes('last 32') || n.includes('32nd')) return 'r32';
   if (n.includes('round of 16') || n.includes('last 16') || n.includes('16th')) return 'r16';
@@ -95,15 +96,25 @@ function getPhase(noteText: string, matchDate: Date): string {
   if (n.includes('semi')) return 'sf';
   if (n.includes('final')) return 'final';
 
-  // Fallback by date
+  // 2. Structural signal (timezone-proof): two teams from the SAME group can
+  // only meet in the group stage. The knockout bracket never pairs same-group
+  // teams in the round of 32, so this reliably rescues last-matchday group
+  // games whose ESPN notes were missing at sync time.
+  if (homeTeam && awayTeam && TEAM_GROUP[homeTeam] && TEAM_GROUP[homeTeam] === TEAM_GROUP[awayTeam]) {
+    return 'group';
+  }
+
+  // 3. Date fallback. Boundaries sit at 12:00 UTC inside the gap between
+  // phases so that late-evening Americas kick-offs (which roll past midnight
+  // UTC) are still attributed to the correct round.
   const t = matchDate.getTime();
-  if (t < new Date('2026-06-28').getTime()) return 'group';
-  if (t < new Date('2026-07-04').getTime()) return 'r32';
-  if (t < new Date('2026-07-09').getTime()) return 'r16';
-  if (t < new Date('2026-07-14').getTime()) return 'qf';
-  if (t < new Date('2026-07-18').getTime()) return 'sf';
-  if (t < new Date('2026-07-19').getTime()) return '3rd';
-  return 'final';
+  if (t < new Date('2026-06-28T12:00:00Z').getTime()) return 'group'; // group stage ends Jun 27
+  if (t < new Date('2026-07-04T12:00:00Z').getTime()) return 'r32';   // R32 ends Jul 3
+  if (t < new Date('2026-07-08T12:00:00Z').getTime()) return 'r16';   // R16 ends Jul 7
+  if (t < new Date('2026-07-12T12:00:00Z').getTime()) return 'qf';    // QF ends Jul 11
+  if (t < new Date('2026-07-16T12:00:00Z').getTime()) return 'sf';    // SF ends Jul 15
+  if (t < new Date('2026-07-19T12:00:00Z').getTime()) return '3rd';   // 3rd place Jul 18
+  return 'final';                                                      // final Jul 19
 }
 
 function httpsGet(url: string): Promise<unknown> {
@@ -198,7 +209,7 @@ export async function syncFromESPN(): Promise<{ synced: number; errors: string[]
     const notes = ((comp.notes as Record<string, unknown>[]) || [])
       .map((n) => n.headline as string || '')
       .join(' ');
-    const phase = getPhase(notes, matchDate);
+    const phase = getPhase(notes, matchDate, homeTeam, awayTeam);
 
     let groupName: string | null = null;
     const groupMatch = notes.match(/Group\s+([A-L])/i);
