@@ -247,11 +247,14 @@ export function Bets() {
     }
   }, [adminMode]);
 
+  // Keep the date strip centered on the selected day. Also re-runs after a
+  // reload (e.g. placing a bet) finishes, since the strip remounts scrolled
+  // back to the start while the loading spinner is shown.
   useEffect(() => {
-    if (!dateScrollRef.current || !selectedDate) return;
+    if (loading || !dateScrollRef.current || !selectedDate) return;
     const active = dateScrollRef.current.querySelector<HTMLElement>('[data-active="true"]');
     if (active) active.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' });
-  }, [selectedDate]);
+  }, [selectedDate, loading]);
 
   async function handleAdminRename(userId: number) {
     if (!renameInput.trim()) return;
